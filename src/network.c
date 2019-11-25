@@ -162,10 +162,10 @@ void read_PacketChatMessage(void* data, int len) {
 		case CHAT_TEAM:
 			switch(players[p->player_id].connected?players[p->player_id].team:players[local_player_id].team) {
 				case TEAM_1:
-					color = rgb(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
+					color = rgb(0,0,255);
 					break;
 				case TEAM_2:
-					color = rgb(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
+					color = rgb(0,255,0);
 					break;
 				case TEAM_SPECTATOR:
 				default:
@@ -262,16 +262,16 @@ void read_PacketStateData(void* data, int len) {
 	memcpy(gamestate.team_1.name,p->team_1_name,sizeof(p->team_1_name));
 	gamestate.team_1.name[sizeof(p->team_1_name)] = 0;
 
-	gamestate.team_1.red = p->team_1_red;
-	gamestate.team_1.green = p->team_1_green;
-	gamestate.team_1.blue = p->team_1_blue;
+	gamestate.team_1.red = 80;
+	gamestate.team_1.green = 80;
+	gamestate.team_1.blue = 160;
 
 	memcpy(gamestate.team_2.name,p->team_2_name,sizeof(p->team_1_name));
 	gamestate.team_2.name[sizeof(p->team_1_name)] = 0;
 
-	gamestate.team_2.red = p->team_2_red;
-	gamestate.team_2.green = p->team_2_green;
-	gamestate.team_2.blue = p->team_2_blue;
+	gamestate.team_2.red = 64;
+	gamestate.team_2.green = 160;
+	gamestate.team_2.blue = 64;
 
 	gamestate.gamemode_type = p->gamemode;
 
@@ -617,10 +617,10 @@ void read_PacketKillAction(void* data, int len) {
 		} else {
 			switch(players[p->killer_id].team) {
 				case TEAM_1:
-					chat_add(1,rgb(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue),m);
+					chat_add(1,rgb(0,0,255),m);
 					break;
 				case TEAM_2:
-					chat_add(1,rgb(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue),m);
+					chat_add(1,rgb(0,255,0),m);
 					break;
 			}
 		}
