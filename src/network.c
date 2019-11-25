@@ -162,10 +162,10 @@ void read_PacketChatMessage(void* data, int len) {
 		case CHAT_TEAM:
 			switch(players[p->player_id].connected?players[p->player_id].team:players[local_player_id].team) {
 				case TEAM_1:
-					color = rgb(0,0,255);
+					color = rgb(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
 					break;
 				case TEAM_2:
-					color = rgb(0,255,0);
+					color = rgb(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
 					break;
 				case TEAM_SPECTATOR:
 				default:
@@ -264,16 +264,50 @@ void read_PacketStateData(void* data, int len) {
 	memcpy(gamestate.team_1.name,p->team_1_name,sizeof(p->team_1_name));
 	gamestate.team_1.name[sizeof(p->team_1_name)] = 0;
 
-	gamestate.team_1.red = 80;
-	gamestate.team_1.green = 80;
-	gamestate.team_1.blue = 160;
+	gamestate.team_1.red = p->team_1_red;
+	gamestate.team_1.green = p->team_1_green;
+	gamestate.team_1.blue = p->team_1_blue;
+
+	gamestate.team_1.red_model = p->team_1_red;
+	gamestate.team_1.green_model = p->team_1_green;
+	gamestate.team_1.blue_model = p->team_1_blue;
+
+	// use HSV color space to reduce neon-colored models
+	float team_1_hue, team_1_saturation, team_1_value;
+	convertRGBtoHSV(gamestate.team_1.red, gamestate.team_1.green, gamestate.team_1.blue, &team_1_hue, &team_1_saturation, &team_1_value);
+	// restrict saturation
+	if (team_1_saturation > 0.50F)
+		team_1_saturation = 0.50F;
+	// restrict brightness
+	if (team_1_value > 0.66F) {
+		team_1_value = 0.66F;
+	} else if (team_1_value < 0.33F) {
+		team_1_value = 0.33F;
+	}
+	// FIXME: saturation of pure red team colors (255,0,0) seems unaffected
+	convertHSVtoRGB(team_1_hue, team_1_saturation, team_1_value, &gamestate.team_1.red_model, &gamestate.team_1.green_model, &gamestate.team_1.blue_model);
 
 	memcpy(gamestate.team_2.name,p->team_2_name,sizeof(p->team_1_name));
 	gamestate.team_2.name[sizeof(p->team_1_name)] = 0;
 
-	gamestate.team_2.red = 64;
-	gamestate.team_2.green = 160;
-	gamestate.team_2.blue = 64;
+	gamestate.team_2.red = p->team_2_red;
+	gamestate.team_2.green = p->team_2_green;
+	gamestate.team_2.blue = p->team_2_blue;
+
+	gamestate.team_2.red_model = p->team_2_red;
+	gamestate.team_2.green_model = p->team_2_green;
+	gamestate.team_2.blue_model = p->team_2_blue;
+
+	float team_2_hue, team_2_saturation, team_2_value;
+	convertRGBtoHSV(gamestate.team_2.red, gamestate.team_2.green, gamestate.team_2.blue, &team_2_hue, &team_2_saturation, &team_2_value);
+	if (team_2_saturation > 0.50F)
+		team_2_saturation = 0.50F;
+	if (team_2_value > 0.66F) {
+		team_2_value = 0.66F;
+	} else if (team_2_value < 0.33F) {
+		team_2_value = 0.33F;
+	}
+	convertHSVtoRGB(team_2_hue, team_2_saturation, team_2_value, &gamestate.team_2.red_model, &gamestate.team_2.green_model, &gamestate.team_2.blue_model);
 
 	gamestate.gamemode_type = p->gamemode;
 
@@ -619,10 +653,10 @@ void read_PacketKillAction(void* data, int len) {
 		} else {
 			switch(players[p->killer_id].team) {
 				case TEAM_1:
-					chat_add(1,rgb(0,0,255),m);
+					chat_add(1,rgb(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue),m);
 					break;
 				case TEAM_2:
-					chat_add(1,rgb(0,255,0),m);
+					chat_add(1,rgb(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue),m);
 					break;
 			}
 		}

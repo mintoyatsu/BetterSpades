@@ -25,7 +25,7 @@
 extern struct GameState {
 	struct Team {
 		char name[11];
-		unsigned char red,green,blue;
+		unsigned char red,green,blue,red_model,green_model,blue_model;
 	} team_1;
 	struct Team team_2;
 	unsigned char gamemode_type;

@@ -133,6 +133,7 @@
 #include "config.h"
 #include "hud.h"
 #include "rpc.h"
+#include "color.h"
 
 void reshape(struct window_instance* window, int width, int height);
 void text_input(struct window_instance* window, unsigned int codepoint);

@@ -466,8 +466,11 @@ static void hud_ingame_render(float scalex, float scalef) {
 
         if(screen_current==SCREEN_TEAM_SELECT) {
             glColor3f(1.0F,0.0F,0.0F);
-            font_centered(settings.window_width/4.0F,61*scalef,18.0F*scalef,"Press 1 to join Blue");
-            font_centered(settings.window_width/4.0F*3.0F,61*scalef,18.0F*scalef,"Press 2 to join Green");
+            char join_str[48];
+            sprintf(join_str,"Press 1 to join %s",gamestate.team_1.name);
+            font_centered(settings.window_width/4.0F,61*scalef,18.0F*scalef,join_str);
+            sprintf(join_str,"Press 2 to join %s",gamestate.team_2.name);
+            font_centered(settings.window_width/4.0F*3.0F,61*scalef,18.0F*scalef,join_str);
             font_centered(settings.window_width/2.0F,61*scalef,18.0F*scalef,"Press 3 to spectate");
             glColor3f(1.0F,1.0F,1.0F);
         }
@@ -491,7 +494,7 @@ static void hud_ingame_render(float scalex, float scalef) {
             }
 
             char score_str[8];
-            glColor3ub(0,0,255); // blue score
+            glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
             switch(gamestate.gamemode_type) {
                 case GAMEMODE_CTF:
                     sprintf(score_str,"%i-%i",gamestate.gamemode.ctf.team_1_score,gamestate.gamemode.ctf.capture_limit);
@@ -507,7 +510,7 @@ static void hud_ingame_render(float scalex, float scalef) {
                 }
             }
             font_centered(settings.window_width/4.0F,487*scalef,53.0F*scalef,score_str);
-            glColor3ub(0,255,0); // green score
+            glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
             switch(gamestate.gamemode_type) {
                 case GAMEMODE_CTF:
                     sprintf(score_str,"%i-%i",gamestate.gamemode.ctf.team_2_score,gamestate.gamemode.ctf.capture_limit);
@@ -579,10 +582,10 @@ static void hud_ingame_render(float scalex, float scalef) {
                 font_select(FONT_SMALLFNT);
                 switch(players[cameracontroller_bodyview_player].team) {
                     case TEAM_1:
-                        glColor3ub(0,0,255);
+                        glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                         break;
                     case TEAM_2:
-                        glColor3ub(0,255,0);
+                        glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                         break;
                 }
                 font_centered(settings.window_width/2.0F,settings.window_height*0.25F,8.0F*scalef,players[cameracontroller_bodyview_player].name);
@@ -773,10 +776,10 @@ static void hud_ingame_render(float scalex, float scalef) {
             if(p<1.0F && l<20.0F*20.0F) {
                 switch(gamestate.gamemode.tc.territory[gamestate.progressbar.tent].team) {
                     case TEAM_1:
-                        glColor3ub(0,0,255);
+                        glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                         break;
                     case TEAM_2:
-                        glColor3ub(0,255,0);
+                        glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                         break;
                     default:
                         glColor3ub(0,0,0);
@@ -784,10 +787,10 @@ static void hud_ingame_render(float scalex, float scalef) {
                 texture_draw(&texture_white,(settings.window_width-440.0F*scalef)/2.0F+440.0F*scalef*p,settings.window_height*0.25F,440.0F*scalef*(1.0F-p),20.0F*scalef);
                 switch(gamestate.progressbar.team_capturing) {
                     case TEAM_1:
-                        glColor3ub(0,0,255);
+                        glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                         break;
                     case TEAM_2:
-                        glColor3ub(0,255,0);
+                        glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                         break;
                     default:
                         glColor3ub(0,0,0);
@@ -825,20 +828,20 @@ static void hud_ingame_render(float scalex, float scalef) {
 
                 if(gamestate.gamemode_type==GAMEMODE_CTF) {
                     if(!gamestate.gamemode.ctf.team_1_intel) { // blue intel blip
-						glColor3ub(0,0,255);
+                        glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                         texture_draw_rotated(&texture_intel,minimap_x+gamestate.gamemode.ctf.team_1_intel_location.dropped.x*scalef,minimap_y-gamestate.gamemode.ctf.team_1_intel_location.dropped.y*scalef,12*scalef,12*scalef,0.0F);
                     }
                     if(map_object_visible(gamestate.gamemode.ctf.team_1_base.x,0.0F,gamestate.gamemode.ctf.team_1_base.y)) { // blue tent blip
-						glColor3ub(0,0,255);
+                        glColor3f(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                         texture_draw_empty_rotated(minimap_x+gamestate.gamemode.ctf.team_1_base.x*scalef,minimap_y-gamestate.gamemode.ctf.team_1_base.y*scalef,12*scalef,12*scalef,0.0F);
                     }
 
                     if(!gamestate.gamemode.ctf.team_2_intel) { // green intel blip
-						glColor3ub(0,255,0);
+                        glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                         texture_draw_rotated(&texture_intel,minimap_x+gamestate.gamemode.ctf.team_2_intel_location.dropped.x*scalef,minimap_y-gamestate.gamemode.ctf.team_2_intel_location.dropped.y*scalef,12*scalef,12*scalef,0.0F);
                     }
                     if(map_object_visible(gamestate.gamemode.ctf.team_2_base.x,0.0F,gamestate.gamemode.ctf.team_2_base.y)) { // green tent blip
-						glColor3ub(0,255,0);
+                        glColor3f(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                         texture_draw_empty_rotated(minimap_x+gamestate.gamemode.ctf.team_2_base.x*scalef,minimap_y-gamestate.gamemode.ctf.team_2_base.y*scalef,12*scalef,12*scalef,0.0F);
                     }
                 }
@@ -846,10 +849,10 @@ static void hud_ingame_render(float scalex, float scalef) {
                     for(int k=0;k<gamestate.gamemode.tc.territory_count;k++) {
                         switch(gamestate.gamemode.tc.territory[k].team) {
                             case TEAM_1:
-								glColor3ub(0,0,255);
+                                glColor3f(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                                 break;
                             case TEAM_2:
-								glColor3ub(0,255,0);
+                                glColor3f(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                                 break;
                             default:
                             case TEAM_SPECTATOR:
@@ -864,10 +867,10 @@ static void hud_ingame_render(float scalex, float scalef) {
 						if (camera_mode==CAMERAMODE_SPECTATOR) {
 							switch(players[k].team) {
 								case TEAM_1:
-									glColor3ub(0,0,255);
+									glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
 									break;
 								case TEAM_2:
-									glColor3ub(0,255,0);
+									glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
 									break;
 							}
 						} else {
@@ -895,10 +898,10 @@ static void hud_ingame_render(float scalex, float scalef) {
             char str[32];
             switch(players[player_intersection_player].team) {
                 case TEAM_1:
-                    glColor3ub(0,0,255);
+                    glColor3ub(gamestate.team_1.red,gamestate.team_1.green,gamestate.team_1.blue);
                     break;
                 case TEAM_2:
-                    glColor3ub(0,255,0);
+                    glColor3ub(gamestate.team_2.red,gamestate.team_2.green,gamestate.team_2.blue);
                     break;
                 default:
                     glColor3f(1.0F,1.0F,1.0F);
