@@ -189,7 +189,7 @@ void read_PacketBlockAction(void* data, int len) {
 				int col = map_get(p->x,63-p->z,p->y);
 				map_set(p->x,63-p->z,p->y,0xFFFFFFFF);
 				map_update_physics(p->x,63-p->z,p->y);
-				particle_create(col,p->x+0.5F,63-p->z+0.5F,p->y+0.5F,2.5F,1.0F,8,0.1F,0.25F);
+				particle_create(col,p->x+0.5F,63-p->z+0.5F,p->y+0.5F,8.0F,1.5F,4,0.25F,0.5F);
 			}
 			break;
 		case ACTION_GRENADE:
@@ -213,7 +213,7 @@ void read_PacketBlockAction(void* data, int len) {
 				int col = map_get(p->x,63-p->z,p->y);
 				map_set(p->x,63-p->z+0,p->y,0xFFFFFFFF);
 				map_update_physics(p->x,63-p->z+0,p->y);
-				particle_create(col,p->x+0.5F,63-p->z+0.5F,p->y+0.5F,2.5F,1.0F,8,0.1F,0.25F);
+				particle_create(col,p->x+0.5F,63-p->z+0.5F,p->y+0.5F,8.0F,1.5F,4,0.25F,0.5F);
 			}
 			if((63-p->z+1)>1) {
 				map_set(p->x,63-p->z+1,p->y,0xFFFFFFFF);

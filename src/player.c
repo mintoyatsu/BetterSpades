@@ -308,12 +308,12 @@ void player_render_all() {
                             local_player_blocks = min(local_player_blocks+1,50);
                             //read_PacketBlockAction(&blk,sizeof(blk));
                         } else {
-                            particle_create(map_get(hit.x,hit.y,hit.z),hit.xb+0.5F,hit.yb+0.5F,hit.zb+0.5F,2.5F,1.0F,4,0.1F,0.25F);
+                            particle_create(map_get(hit.x,hit.y,hit.z),hit.xb+0.5F,hit.yb+0.5F,hit.zb+0.5F,8.0F,1.5F,4,0.25F,0.5F);
                         }
                         break;
                     case CAMERA_HITTYPE_PLAYER:
                         sound_create(NULL,SOUND_WORLD,&sound_spade_whack,players[k].pos.x,players[k].pos.y,players[k].pos.z)->stick_to_player = k;
-                        particle_create(0x0000FF,players[hit.player_id].physics.eye.x,players[hit.player_id].physics.eye.y+player_section_height(hit.player_section),players[hit.player_id].physics.eye.z,3.5F,1.0F,8,0.1F,0.4F);
+                        particle_create(0x000080,players[hit.player_id].physics.eye.x,players[hit.player_id].physics.eye.y+player_section_height(hit.player_section),players[hit.player_id].physics.eye.z,8.0F,1.5F,4,0.25F,0.5F);
                         if(k==local_player_id) {
                             struct PacketHit h;
                             h.player_id = hit.player_id;
@@ -392,11 +392,11 @@ void player_render_all() {
                         case CAMERA_HITTYPE_PLAYER:
                         {
                             sound_create(NULL,SOUND_WORLD,(hit.player_section==HITTYPE_HEAD)?&sound_spade_whack:&sound_hitplayer,players[hit.player_id].pos.x,players[hit.player_id].pos.y,players[hit.player_id].pos.z)->stick_to_player = hit.player_id;
-                            particle_create(0x0000FF,players[hit.player_id].physics.eye.x,players[hit.player_id].physics.eye.y+player_section_height(hit.player_section),players[hit.player_id].physics.eye.z,3.5F,1.0F,8,0.1F,0.4F);
+                            particle_create(0x000080,players[hit.player_id].physics.eye.x,players[hit.player_id].physics.eye.y+player_section_height(hit.player_section),players[hit.player_id].physics.eye.z,8.0F,1.5F,4,0.25F,0.5F);
                             break;
                         }
                         case CAMERA_HITTYPE_BLOCK:
-                            particle_create(map_get(hit.x,hit.y,hit.z),hit.xb+0.5F,hit.yb+0.5F,hit.zb+0.5F,2.5F,1.0F,4,0.1F,0.25F);
+                            particle_create(map_get(hit.x,hit.y,hit.z),hit.xb+0.5F,hit.yb+0.5F,hit.zb+0.5F,8.0F,1.5F,4,0.25F,0.5F);
                             break;
                     }
                     players[k].gun_shoot_timer = window_time();
@@ -472,7 +472,7 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
 			matrix_rotate(90.0F,0.0F,1.0F,0.0F);
 			if(p->physics.velocity.y<0.05F && p->pos.y<1.5F) {
 				matrix_translate(0.0F,(sin(window_time()*1.5F)-1.0F)*0.15F,0.0F);
-				matrix_rotate(sin(window_time()*1.5F)*5.0F,1.0F,0.0F,0.0F);
+				//matrix_rotate(sin(window_time()*1.5F)*5.0F,1.0F,0.0F,0.0F);
 			}
 			matrix_upload();
 			kv6_render(&model_playerdead,p->team);

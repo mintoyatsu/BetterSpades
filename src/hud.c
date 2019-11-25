@@ -73,6 +73,12 @@ static int playertable_sort(const void* a, const void* b) {
 static void hud_ingame_render3D() {
     glDepthRange(0.0F,0.05F);
 
+	// fixed lighting for hud elements
+	float lambient[4] = {0.5F,0.5F,0.5F,1.0F};
+	float ldiffuse[4] = {0.5F,0.5F,0.5F,1.0F};
+	glLightfv(GL_LIGHT0,GL_AMBIENT,lambient);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,ldiffuse);
+
 	matrix_select(matrix_projection);
 	matrix_identity();
 	matrix_perspective(camera_fov,((float)settings.window_width)/((float)settings.window_height),0.1F,128.0F);

@@ -550,7 +550,7 @@ void map_collapsing_update(float dt) {
 										  pos_keyz(key)-map_collapsing_structures[k].p2.z+0.5F,
 										  1.0F};
 							matrix_vector(v);
-							particle_create(color,v[0],v[1],v[2],2.5F,1.0F,2,0.25F,0.4F);
+							particle_create(color,v[0],v[1],v[2],8.0F,1.5F,2,0.25F,0.5F);
 
 							node = node->next;
 						}

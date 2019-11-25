@@ -149,7 +149,7 @@ void grenade_update(float dt) {
 				);
 				particle_create(grenade_inwater(&grenades[k])?map_get(grenades[k].pos.x,0,grenades[k].pos.z):0x505050,
 					grenades[k].pos.x,grenades[k].pos.y+1.5F,grenades[k].pos.z,
-					20.0F,1.5F,64,0.1F,0.5F
+					20.0F,1.5F,64,0.25F,0.5F
 				);
 				grenades[k].active = 0;
 			} else {
