@@ -268,9 +268,9 @@ void read_PacketStateData(void* data, int len) {
 	gamestate.team_1.green = p->team_1_green;
 	gamestate.team_1.blue = p->team_1_blue;
 
-	gamestate.team_1.red_model = p->team_1_red;
-	gamestate.team_1.green_model = p->team_1_green;
-	gamestate.team_1.blue_model = p->team_1_blue;
+	gamestate.team_1.model_red = p->team_1_red;
+	gamestate.team_1.model_green = p->team_1_green;
+	gamestate.team_1.model_blue = p->team_1_blue;
 
 	// use HSV color space to reduce neon-colored models
 	float team_1_hue, team_1_saturation, team_1_value;
@@ -285,7 +285,7 @@ void read_PacketStateData(void* data, int len) {
 		team_1_value = 0.33F;
 	}
 	// FIXME: saturation of pure red team colors (255,0,0) seems unaffected
-	convertHSVtoRGB(team_1_hue, team_1_saturation, team_1_value, &gamestate.team_1.red_model, &gamestate.team_1.green_model, &gamestate.team_1.blue_model);
+	convertHSVtoRGB(team_1_hue, team_1_saturation, team_1_value, &gamestate.team_1.model_red, &gamestate.team_1.model_green, &gamestate.team_1.model_blue);
 
 	memcpy(gamestate.team_2.name,p->team_2_name,sizeof(p->team_1_name));
 	gamestate.team_2.name[sizeof(p->team_1_name)] = 0;
@@ -294,9 +294,9 @@ void read_PacketStateData(void* data, int len) {
 	gamestate.team_2.green = p->team_2_green;
 	gamestate.team_2.blue = p->team_2_blue;
 
-	gamestate.team_2.red_model = p->team_2_red;
-	gamestate.team_2.green_model = p->team_2_green;
-	gamestate.team_2.blue_model = p->team_2_blue;
+	gamestate.team_2.model_red = p->team_2_red;
+	gamestate.team_2.model_green = p->team_2_green;
+	gamestate.team_2.model_blue = p->team_2_blue;
 
 	float team_2_hue, team_2_saturation, team_2_value;
 	convertRGBtoHSV(gamestate.team_2.red, gamestate.team_2.green, gamestate.team_2.blue, &team_2_hue, &team_2_saturation, &team_2_value);
@@ -307,7 +307,7 @@ void read_PacketStateData(void* data, int len) {
 	} else if (team_2_value < 0.33F) {
 		team_2_value = 0.33F;
 	}
-	convertHSVtoRGB(team_2_hue, team_2_saturation, team_2_value, &gamestate.team_2.red_model, &gamestate.team_2.green_model, &gamestate.team_2.blue_model);
+	convertHSVtoRGB(team_2_hue, team_2_saturation, team_2_value, &gamestate.team_2.model_red, &gamestate.team_2.model_green, &gamestate.team_2.model_blue);
 
 	gamestate.gamemode_type = p->gamemode;
 

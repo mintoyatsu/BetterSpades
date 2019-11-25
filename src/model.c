@@ -278,14 +278,14 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 					if(r==0 && g==0 && b==0) {
 						switch(t) {
 							case TEAM_1:
-								r = gamestate.team_1.red_model*0.75F;
-								g = gamestate.team_1.green_model*0.75F;
-								b = gamestate.team_1.blue_model*0.75F;
+								r = gamestate.team_1.model_red*0.75F;
+								g = gamestate.team_1.model_green*0.75F;
+								b = gamestate.team_1.model_blue*0.75F;
 								break;
 							case TEAM_2:
-								r = gamestate.team_2.red_model*0.75F;
-								g = gamestate.team_2.green_model*0.75F;
-								b = gamestate.team_2.blue_model*0.75F;
+								r = gamestate.team_2.model_red*0.75F;
+								g = gamestate.team_2.model_green*0.75F;
+								b = gamestate.team_2.model_blue*0.75F;
 								break;
 						}
 					}
@@ -579,14 +579,14 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 					if((r|g|b)==0) {
 						switch(t) {
 							case TEAM_1:
-								r = gamestate.team_1.red*0.75F;
-								g = gamestate.team_1.green*0.75F;
-								b = gamestate.team_1.blue*0.75F;
+								r = gamestate.team_1.model_red*0.75F;
+								g = gamestate.team_1.model_green*0.75F;
+								b = gamestate.team_1.model_blue*0.75F;
 								break;
 							case TEAM_2:
-								r = gamestate.team_2.red*0.75F;
-								g = gamestate.team_2.green*0.75F;
-								b = gamestate.team_2.blue*0.75F;
+								r = gamestate.team_2.model_red*0.75F;
+								g = gamestate.team_2.model_green*0.75F;
+								b = gamestate.team_2.model_blue*0.75F;
 								break;
 						}
 					}
