@@ -446,7 +446,6 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
                           fog_color[2]*a+gamestate.team_2.blue/255.0F*(1.0F-a));
                 break;
         }
-        font_select(FONT_FIXEDSYS);
         glEnable(GL_ALPHA_TEST);
         glAlphaFunc(GL_GREATER,0.5F);
 		glDisable(GL_DEPTH_TEST);

@@ -411,6 +411,8 @@ void display() {
 	matrix_upload_p();
 	float scalex = settings.window_width/800.0F;
 	float scalef = settings.window_height/600.0F;
+	//float scalex_r = (scalex - floor(scalex) > 0.5) ? ceil(scalex) : floor(scalex);
+	//float scalef_r = (scalef - floor(scalef) > 0.5) ? ceil(scalef) : floor(scalef);
 
 	if(hud_active->render_2D)
 		hud_active->render_2D(scalex,scalef);
@@ -466,7 +468,7 @@ void init() {
 }
 
 void reshape(struct window_instance* window, int width, int height) {
-    font_reset();
+    //font_reset();
 	glViewport(0,0,width,height);
 	settings.window_width = width;
 	settings.window_height = height;

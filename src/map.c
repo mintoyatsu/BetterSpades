@@ -695,10 +695,10 @@ void map_vxl_setgeom(int x, int y, int z, unsigned int t, unsigned int* map) {
 void map_vxl_setcolor(int x, int y, int z, unsigned int t, unsigned int* map) {
 	if(x<0 || y<0 || z<0 || x>=map_size_x || y>=map_size_z || z>=map_size_y)
 		return;
-	unsigned char r = t & 255;
+	unsigned char b = t & 255;
 	unsigned char g = (t>>8) & 255;
-	unsigned char b = (t>>16) & 255;
-	map[x+((map_size_y-1-z)*map_size_z+y)*map_size_x] = (r<<16)|(g<<8)|b;
+	unsigned char r = (t>>16) & 255;
+	map[x+((map_size_y-1-z)*map_size_z+y)*map_size_x] = (b<<16)|(g<<8)|r;
 }
 
 //Copyright (c) Mathias Kaerlev 2011-2012 (but might be original code by Ben himself)

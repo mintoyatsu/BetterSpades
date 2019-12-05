@@ -21,7 +21,6 @@
 
 #include "lodepng/lodepng.c"
 
-struct texture texture_splash;
 struct texture texture_minimap;
 struct texture texture_gradient;
 
@@ -40,13 +39,7 @@ struct texture texture_zoom_shotgun;
 
 struct texture texture_white;
 struct texture texture_target;
-struct texture texture_indicator;
-
-struct texture texture_player;
-struct texture texture_medical;
-struct texture texture_intel;
-struct texture texture_command;
-struct texture texture_tracer;
+struct texture texture_icon;
 
 struct texture texture_ui_wait;
 struct texture texture_ui_join;
@@ -352,8 +345,6 @@ void texture_gradient_fog(unsigned int* gradient) {
 }
 
 void texture_init() {
-    texture_create(&texture_splash,"png/splash.png");
-
     texture_create(&texture_health,"png/health.png");
     texture_create(&texture_block,"png/block.png");
     texture_create(&texture_grenade,"png/grenade.png");
@@ -367,13 +358,7 @@ void texture_init() {
 
     texture_create(&texture_white,"png/white.png");
     texture_create(&texture_target,"png/target.png");
-    texture_create(&texture_indicator,"png/indicator.png");
-
-    texture_create(&texture_player,"png/player.png");
-    texture_create(&texture_medical,"png/medical.png");
-    texture_create(&texture_intel,"png/intel.png");
-    texture_create(&texture_command,"png/command.png");
-    texture_create(&texture_tracer,"png/tracer.png");
+    texture_create(&texture_icon,"png/icon.png");
 
     texture_create(&texture_ui_wait,"png/ui/wait.png");
 	texture_filter(&texture_ui_wait,TEXTURE_FILTER_LINEAR);

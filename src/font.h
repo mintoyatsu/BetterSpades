@@ -17,17 +17,17 @@
     along with BetterSpades.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define FONT_FIXEDSYS 0
-#define FONT_SMALLFNT 1
+#define FONT_SMALLFNT 0
+#define FONT_KNUMB 1
+
+extern struct texture font_knumb;
+extern struct texture font_smallfnt;
 
 extern short* font_vertex_buffer;
 extern short* font_coords_buffer;
 extern int font_type;
 
-extern struct list font_backed_fonts;
-
 unsigned char font_init(void);
-void font_reset(void);
 float font_length(float h, char* text);
 void font_render(float x, float y, float h, char* text);
 void font_centered(float x, float y, float h, char* text);

@@ -23,7 +23,6 @@ struct texture {
     unsigned char* pixels;
 };
 
-extern struct texture texture_splash;
 extern struct texture texture_minimap;
 extern struct texture texture_gradient;
 
@@ -42,13 +41,7 @@ extern struct texture texture_zoom_shotgun;
 
 extern struct texture texture_white;
 extern struct texture texture_target;
-extern struct texture texture_indicator;
-
-extern struct texture texture_player;
-extern struct texture texture_medical;
-extern struct texture texture_intel;
-extern struct texture texture_command;
-extern struct texture texture_tracer;
+extern struct texture texture_icon;
 
 extern struct texture texture_ui_wait;
 extern struct texture texture_ui_join;
