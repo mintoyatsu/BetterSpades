@@ -156,20 +156,6 @@ void drawScene() {
 			matrix_pop();
 		}
 	}
-	if(gamestate.gamemode_type==GAMEMODE_TC) {
-		for(int k=0;k<gamestate.gamemode.tc.territory_count;k++) {
-			matrix_push();
-			matrix_translate(gamestate.gamemode.tc.territory[k].x,
-						 63.0F-gamestate.gamemode.tc.territory[k].z+1.0F,
-						 gamestate.gamemode.tc.territory[k].y);
-			kv6_calclight(gamestate.gamemode.tc.territory[k].x,
- 						 63.0F-gamestate.gamemode.tc.territory[k].z+1.0F,
- 						 gamestate.gamemode.tc.territory[k].y);
-			matrix_upload();
-			kv6_render(&model_tent,min(gamestate.gamemode.tc.territory[k].team,2));
-			matrix_pop();
-		}
-	}
 }
 
 void display() {
@@ -260,10 +246,10 @@ void display() {
 					local_player_grenades = max(local_player_grenades-1,0);
 					struct PacketGrenade g;
 					g.player_id = local_player_id;
-					g.x = players[local_player_id].pos.x;
-					g.y = players[local_player_id].pos.z;
-					g.z = 63.0F-players[local_player_id].pos.y;
-					g.fuse_length = g.vx = g.vy = g.vz = 0.0F;
+					//g.x = players[local_player_id].pos.x;
+					//g.y = players[local_player_id].pos.z;
+					//g.z = 63.0F-players[local_player_id].pos.y;
+					g.fuse_length = /*g.vx = g.vy = g.vz =*/ 0.0F;
 					network_send(PACKET_GRENADE_ID,&g,sizeof(g));
 					read_PacketGrenade(&g,sizeof(g));
 					players[local_player_id].input.buttons.lmb_start = window_time();
@@ -273,7 +259,7 @@ void display() {
 			int* pos = NULL;
 			switch(players[local_id].held_item) {
 				case TOOL_BLOCK:
-					if(!players[local_id].input.keys.sprint && render_fpv) {
+					if(render_fpv) {
 						if(is_local)
 							pos = camera_terrain_pick(0);
 						else
@@ -290,15 +276,10 @@ void display() {
 				glDisable(GL_DEPTH_TEST);
 				glDepthMask(GL_FALSE);
 				struct Point cubes[64];
-				int amount = 0;
-				if(is_local && local_player_drag_active && players[local_player_id].input.buttons.rmb && players[local_player_id].held_item==TOOL_BLOCK) {
-					amount = map_cube_line(local_player_drag_x,local_player_drag_z,63-local_player_drag_y,pos[0],pos[2],63-pos[1],cubes);
-				} else {
-					amount = 1;
-					cubes[0].x = pos[0];
-					cubes[0].y = pos[2];
-					cubes[0].z = 63-pos[1];
-				}
+				int amount = 1;
+				cubes[0].x = pos[0];
+				cubes[0].y = pos[2];
+				cubes[0].z = 63-pos[1];
 				while(amount>0) {
 					int tmp = cubes[amount-1].y;
 					cubes[amount-1].y = 63-cubes[amount-1].z;

@@ -154,9 +154,9 @@ void weapon_spread(struct Player* p, float* d) {
             spread = 0.024F;
             break;
     }
-    d[0] += (ms_rand()-ms_rand())/16383.0F*spread*(p->input.buttons.rmb?0.5F:1.0F)*((p->input.keys.crouch && p->weapon!=WEAPON_SHOTGUN)?0.5F:1.0F);
-    d[1] += (ms_rand()-ms_rand())/16383.0F*spread*(p->input.buttons.rmb?0.5F:1.0F)*((p->input.keys.crouch && p->weapon!=WEAPON_SHOTGUN)?0.5F:1.0F);
-    d[2] += (ms_rand()-ms_rand())/16383.0F*spread*(p->input.buttons.rmb?0.5F:1.0F)*((p->input.keys.crouch && p->weapon!=WEAPON_SHOTGUN)?0.5F:1.0F);
+    d[0] += (ms_rand()-ms_rand())/16383.0F*spread*(p->input.buttons.rmb?0.5F:1.0F)*((p->input.buttons.crouch && p->weapon!=WEAPON_SHOTGUN)?0.5F:1.0F);
+    d[1] += (ms_rand()-ms_rand())/16383.0F*spread*(p->input.buttons.rmb?0.5F:1.0F)*((p->input.buttons.crouch && p->weapon!=WEAPON_SHOTGUN)?0.5F:1.0F);
+    d[2] += (ms_rand()-ms_rand())/16383.0F*spread*(p->input.buttons.rmb?0.5F:1.0F)*((p->input.buttons.crouch && p->weapon!=WEAPON_SHOTGUN)?0.5F:1.0F);
 }
 
 void weapon_recoil(int gun, double* horiz_recoil, double* vert_recoil) {
@@ -234,11 +234,12 @@ void weapon_reload() {
 
     sound_create(NULL,SOUND_LOCAL,weapon_sound_reload(players[local_player_id].weapon),players[local_player_id].pos.x,players[local_player_id].pos.y,players[local_player_id].pos.z);
 
-    struct PacketWeaponReload reloadp;
+    // TODO: doesn't exist in .54?
+    /*struct PacketWeaponReload reloadp;
     reloadp.player_id = local_player_id;
     reloadp.ammo = local_player_ammo;
     reloadp.reserved = local_player_ammo_reserved;
-    network_send(PACKET_WEAPONRELOAD_ID,&reloadp,sizeof(reloadp));
+    network_send(PACKET_WEAPONRELOAD_ID,&reloadp,sizeof(reloadp));*/
 }
 
 void weapon_reload_abort() {
@@ -280,11 +281,12 @@ void weapon_shoot() {
                    o[0],o[1],o[2],128.0F);
 
        if(players[local_player_id].input.buttons.packed!=network_buttons_last) {
-           struct PacketWeaponInput in;
+           struct PacketAnimationData in;
            in.player_id = local_player_id;
-           in.primary = players[local_player_id].input.buttons.lmb;
-           in.secondary = players[local_player_id].input.buttons.rmb;
-           network_send(PACKET_WEAPONINPUT_ID,&in,sizeof(in));
+           in.fire = players[local_player_id].input.buttons.lmb;
+           in.aim = players[local_player_id].input.buttons.rmb;
+           // TODO: jumping/crouching
+           network_send(PACKET_ANIMATIONDATA_ID,&in,sizeof(in));
 
            network_buttons_last = players[local_player_id].input.buttons.packed;
        }
@@ -305,7 +307,24 @@ void weapon_shoot() {
 
                 struct PacketHit h;
                 h.player_id = hit.player_id;
-                h.hit_type = hit.player_section;
+                switch(hit.player_section) {
+                    case HITTYPE_HEAD:
+                    {
+                        h.value = 100;
+                        break;
+                    }
+                    case HITTYPE_TORSO:
+                    {
+                        h.value = 49;
+                        break;
+                    }
+                    case HITTYPE_ARMS:
+                    case HITTYPE_LEGS:
+                    {
+                        h.value = 33;
+                        break;
+                    }
+                }
                 network_send(PACKET_HIT_ID,&h,sizeof(h));
                 //printf("hit on %s (%i)\n",players[hit.player_id].name,h.hit_type);
                 break;
@@ -355,7 +374,7 @@ void weapon_shoot() {
         vert_recoil *= 2.0;
         horiz_recoil *= 2.0;
     } else {
-        if(players[local_player_id].input.keys.crouch) {
+        if(players[local_player_id].input.buttons.crouch) {
             vert_recoil *= 0.5;
             horiz_recoil *= 0.5;
         }

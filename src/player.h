@@ -120,16 +120,14 @@ extern struct Player {
 				unsigned char down : 1;
 				unsigned char left : 1;
 				unsigned char right : 1;
-				unsigned char jump : 1;
-				unsigned char crouch : 1;
-				unsigned char sneak : 1;
-				unsigned char sprint : 1;
 			};
 		} keys;
 		union {
 			unsigned char packed;
 			struct {
 				unsigned char lmb : 1;
+				unsigned char jump : 1;
+				unsigned char crouch : 1;
 				unsigned char rmb : 1;
 				float lmb_start, rmb_start;
 			};

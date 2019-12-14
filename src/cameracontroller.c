@@ -62,22 +62,20 @@ void cameracontroller_fps(float dt) {
     	players[local_player_id].input.keys.down = window_key_down(WINDOW_KEY_DOWN);
     	players[local_player_id].input.keys.left = window_key_down(WINDOW_KEY_LEFT);
     	players[local_player_id].input.keys.right = window_key_down(WINDOW_KEY_RIGHT);
-        if(players[local_player_id].input.keys.crouch && !window_key_down(WINDOW_KEY_CROUCH) && player_uncrouch(&players[local_player_id])) {
-            players[local_player_id].input.keys.crouch = 0;
+        if(players[local_player_id].input.buttons.crouch && !window_key_down(WINDOW_KEY_CROUCH) && player_uncrouch(&players[local_player_id])) {
+            players[local_player_id].input.buttons.crouch = 0;
         }
 
 		if(window_key_down(WINDOW_KEY_CROUCH)) {
 			//following if-statement disables smooth crouching on local player
-			if(!players[local_player_id].input.keys.crouch && !players[local_player_id].physics.airborne) {
+			if(!players[local_player_id].input.buttons.crouch && !players[local_player_id].physics.airborne) {
 				players[local_player_id].pos.y -= 0.9F;
 				players[local_player_id].physics.eye.y -= 0.9F;
 				last_cy -= 0.9F;
 			}
-			players[local_player_id].input.keys.crouch = 1;
+			players[local_player_id].input.buttons.crouch = 1;
 		}
-		players[local_player_id].input.keys.sprint = window_key_down(WINDOW_KEY_SPRINT);
-		players[local_player_id].input.keys.jump = window_key_down(WINDOW_KEY_SPACE);
-		players[local_player_id].input.keys.sneak = window_key_down(WINDOW_KEY_SNEAK);
+		players[local_player_id].input.buttons.jump = window_key_down(WINDOW_KEY_SPACE);
 
 		if(window_key_down(WINDOW_KEY_SPACE) && !players[local_player_id].physics.airborne) {
 			players[local_player_id].physics.jump = 1;

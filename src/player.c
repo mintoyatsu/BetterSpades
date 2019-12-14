@@ -192,7 +192,7 @@ float* player_tool_translate_func(struct Player* p) {
 }
 
 float player_height(struct Player* p) {
-    return p->input.keys.crouch?1.05F:1.1F;
+    return p->input.buttons.crouch?1.05F:1.1F;
 }
 
 float player_height2(struct Player* p) {
@@ -317,7 +317,8 @@ void player_render_all() {
                         if(k==local_player_id) {
                             struct PacketHit h;
                             h.player_id = hit.player_id;
-                            h.hit_type = HITTYPE_SPADE;
+                            //h.hit_type = HITTYPE_SPADE;
+                            h.value = 49;
                             network_send(PACKET_HIT_ID,&h,sizeof(h));
                         }
                         break;
@@ -407,7 +408,7 @@ void player_render_all() {
 }
 
 static float foot_function(struct Player* p) {
-    float f = (window_time()-p->sound.feet_started_cycle)/(p->input.keys.sprint?(0.5F/1.3F):0.5F);
+    float f = (window_time()-p->sound.feet_started_cycle)/0.5F;
     f = f*2.0F-1.0F;
     return p->sound.feet_cylce?f:-f;
 }
@@ -484,8 +485,8 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
 
     float time = window_time()*1000.0F;
 
-    struct kv6_t* torso = p->input.keys.crouch?&model_playertorsoc:&model_playertorso;
-    struct kv6_t* leg = p->input.keys.crouch?&model_playerlegc:&model_playerleg;
+    struct kv6_t* torso = p->input.buttons.crouch?&model_playertorsoc:&model_playertorso;
+    struct kv6_t* leg = p->input.buttons.crouch?&model_playerlegc:&model_playerleg;
     float height = player_height(p);
     if(id!=local_player_id) {
         height -= 0.25F;
@@ -550,10 +551,10 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
             matrix_translate(p->physics.eye.x,p->physics.eye.y+height,p->physics.eye.z);
             matrix_pointAt(-oz,0.0F,ox);
             matrix_translate((torso->xsiz-model_intel.xsiz)*0.5F*torso->scale,
-                            -(torso->zpiv-torso->zsiz*0.5F+model_intel.zsiz*(p->input.keys.crouch?0.125F:0.25F))*torso->scale,
+                            -(torso->zpiv-torso->zsiz*0.5F+model_intel.zsiz*(p->input.buttons.crouch?0.125F:0.25F))*torso->scale,
                             (torso->ypiv+model_intel.ypiv)*torso->scale);
             matrix_scale3(torso->scale/model_intel.scale);
-            if(p->input.keys.crouch) {
+            if(p->input.buttons.crouch) {
                 matrix_rotate(-45.0F,1.0F,0.0F,0.0F);
             }
             matrix_upload();
@@ -571,7 +572,7 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
         matrix_translate(p->physics.eye.x,p->physics.eye.y+height,p->physics.eye.z);
         matrix_pointAt(ox,0.0F,oz);
         matrix_rotate(90.0F,0.0F,1.0F,0.0F);
-        matrix_translate(torso->xsiz*0.1F*0.5F-leg->xsiz*0.1F*0.5F,-torso->zsiz*0.1F*(p->input.keys.crouch?0.6F:1.0F),p->input.keys.crouch?(-torso->zsiz*0.1F*0.75F):0.0F);
+        matrix_translate(torso->xsiz*0.1F*0.5F-leg->xsiz*0.1F*0.5F,-torso->zsiz*0.1F*(p->input.buttons.crouch?0.6F:1.0F),p->input.buttons.crouch?(-torso->zsiz*0.1F*0.75F):0.0F);
         matrix_rotate(45.0F*foot_function(p)*a,1.0F,0.0F,0.0F);
         matrix_rotate(45.0F*foot_function(p)*b,0.0F,0.0F,1.0F);
 		if(render) {
@@ -592,7 +593,7 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
         matrix_translate(p->physics.eye.x,p->physics.eye.y+height,p->physics.eye.z);
         matrix_pointAt(ox,0.0F,oz);
         matrix_rotate(90.0F,0.0F,1.0F,0.0F);
-        matrix_translate(-torso->xsiz*0.1F*0.5F+leg->xsiz*0.1F*0.5F,-torso->zsiz*0.1F*(p->input.keys.crouch?0.6F:1.0F),p->input.keys.crouch?(-torso->zsiz*0.1F*0.75F):0.0F);
+        matrix_translate(-torso->xsiz*0.1F*0.5F+leg->xsiz*0.1F*0.5F,-torso->zsiz*0.1F*(p->input.buttons.crouch?0.6F:1.0F),p->input.buttons.crouch?(-torso->zsiz*0.1F*0.75F):0.0F);
         matrix_rotate(-45.0F*foot_function(p)*a,1.0F,0.0F,0.0F);
         matrix_rotate(-45.0F*foot_function(p)*b,0.0F,0.0F,1.0F);
 		if(render) {
@@ -613,7 +614,7 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
     matrix_push();
     matrix_translate(p->physics.eye.x,p->physics.eye.y+height,p->physics.eye.z);
     if(!render_fpv)
-        matrix_translate(0.0F,p->input.keys.crouch*0.1F-0.1F*2,0.0F);
+        matrix_translate(0.0F,p->input.buttons.crouch*0.1F-0.1F*2,0.0F);
     matrix_pointAt(ox,oy,oz);
     matrix_rotate(90.0F,0.0F,1.0F,0.0F);
     if(render_fpv)
@@ -624,9 +625,6 @@ void player_render(struct Player* p, int id, Ray* ray, char render, struct playe
         float* f = player_tool_translate_func(p);
         matrix_translate(f[0],f[1],0.1F*player_swing_func(time/1000.0F)*speed+f[2]);
     }
-
-    if(p->input.keys.sprint && !p->input.keys.crouch)
-        matrix_rotate(45.0F,1.0F,0.0F,0.0F);
 
     if(render_fpv && window_time()-p->item_showup<0.5F)
         matrix_rotate(45.0F-(window_time()-p->item_showup)*90.0F,1.0F,0.0F,0.0F);
@@ -767,7 +765,7 @@ void player_reposition(struct Player* p)  {
     p->physics.eye.y = p->pos.y;
     p->physics.eye.z = p->pos.z;
     float f = p->physics.lastclimb-window_time();
-    if(f>-0.25F && !p->input.keys.crouch) {
+    if(f>-0.25F && !p->input.buttons.crouch) {
         p->physics.eye.z += (f+0.25F)/0.25F;
         if(&players[local_player_id]==p) {
             last_cy = 63.0F-p->physics.eye.z;
@@ -824,7 +822,7 @@ void player_boxclipmove(struct Player* p, float fsynctics) {
     	nx = f*p->physics.velocity.x+p->pos.x;
     	ny = f*p->physics.velocity.y+p->pos.y;
 
-    	if(p->input.keys.crouch)
+    	if(p->input.buttons.crouch)
     	{
     		offset = 0.45f;
     		m = 0.9f;
@@ -843,7 +841,7 @@ void player_boxclipmove(struct Player* p, float fsynctics) {
     	while(z>=-1.36f && !player_clipbox(nx+f, p->pos.y-0.45f, nz+z) && !player_clipbox(nx+f, p->pos.y+0.45f, nz+z))
     		z-=0.9f;
     	if(z<-1.36f) p->pos.x = nx;
-    	else if(!p->input.keys.crouch && p->orientation.z<0.5f && !p->input.keys.sprint)
+    	else if(!p->input.buttons.crouch && p->orientation.z<0.5f)
     	{
     		z=0.35f;
     		while(z>=-2.36f && !player_clipbox(nx+f, p->pos.y-0.45f, nz+z) && !player_clipbox(nx+f, p->pos.y+0.45f, nz+z))
@@ -863,7 +861,7 @@ void player_boxclipmove(struct Player* p, float fsynctics) {
     	while(z>=-1.36f && !player_clipbox(p->pos.x-0.45f, ny+f, nz+z) && !player_clipbox(p->pos.x+0.45f, ny+f, nz+z))
     		z-=0.9f;
     	if(z<-1.36f) p->pos.y = ny;
-    	else if(!p->input.keys.crouch && p->orientation.z<0.5f && !p->input.keys.sprint && !climb)
+    	else if(!p->input.buttons.crouch && p->orientation.z<0.5f && !climb)
     	{
     		z=0.35f;
     		while(z>=-2.36f && !player_clipbox(p->pos.x-0.45f, ny+f, nz+z) && !player_clipbox(p->pos.x+0.45f, ny+f, nz+z))
@@ -946,12 +944,10 @@ int player_move(struct Player* p, float fsynctics, int id) {
 	f = fsynctics; //player acceleration scalar
 	if(p->physics.airborne)
 		f *= 0.1f;
-	else if(p->input.keys.crouch)
+	else if(p->input.buttons.crouch)
 		f *= 0.3f;
-	else if((p->input.buttons.rmb && p->held_item == TOOL_GUN) || p->input.keys.sneak)
+	else if((p->input.buttons.rmb && p->held_item == TOOL_GUN)) // apparently, sneaking isn't synced in .54
 		f *= 0.5f;
-	else if(p->input.keys.sprint)
-		f *= 1.3f;
 
 	if((p->input.keys.up || p->input.keys.down) && (p->input.keys.left || p->input.keys.right))
 		f *= SQRT; //if strafe + forward/backwards then limit diagonal velocity
@@ -1017,15 +1013,15 @@ int player_move(struct Player* p, float fsynctics, int id) {
     player_coordsystem_adjust2(p);
 
     if(p->input.keys.up || p->input.keys.down || p->input.keys.left || p->input.keys.right) {
-        if(window_time()-p->sound.feet_started>(p->input.keys.sprint?(0.5F/1.3F):0.5F)
-           && (!p->input.keys.crouch && !p->input.keys.sneak) && !p->physics.airborne
+        if(window_time()-p->sound.feet_started>0.5F
+           && !p->input.buttons.crouch && !p->physics.airborne
            && pow(p->physics.velocity.x,2.0F)+pow(p->physics.velocity.z,2.0F)>pow(0.125F,2.0F)) {
             struct Sound_wav* footstep[8] = {&sound_footstep1,&sound_footstep2,&sound_footstep3,&sound_footstep4,
                                              &sound_wade1,&sound_wade2,&sound_wade3,&sound_wade4};
             sound_create(NULL,local?SOUND_LOCAL:SOUND_WORLD,footstep[(rand()%4)+(p->physics.wade?4:0)],p->pos.x,p->pos.y,p->pos.z)->stick_to_player = id;
             p->sound.feet_started = window_time();
         }
-        if(window_time()-p->sound.feet_started_cycle>(p->input.keys.sprint?(0.5F/1.3F):0.5F)) {
+        if(window_time()-p->sound.feet_started_cycle>0.5F) {
             p->sound.feet_started_cycle = window_time();
             p->sound.feet_cylce = !p->sound.feet_cylce;
         }

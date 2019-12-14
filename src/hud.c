@@ -436,7 +436,8 @@ static void hud_ingame_render(float scalex, float scalef) {
         glColor3f(1.0F,1.0F,1.0F);
         texture_draw(&texture_splash,(settings.window_width-settings.window_height*4.0F/3.0F*0.7F)*0.5F,560*scalef,settings.window_height*4.0F/3.0F*0.7F,settings.window_height*0.7F);
 
-        float p = (compressed_chunk_data_estimate>0)?((float)compressed_chunk_data_offset/(float)compressed_chunk_data_estimate):0.0F;;
+		// TODO
+        /*float p = (compressed_chunk_data_estimate>0)?((float)compressed_chunk_data_offset/(float)compressed_chunk_data_estimate):0.0F;;
         glColor3ub(68,68,68);
         texture_draw(&texture_white,(settings.window_width-440.0F*scalef)/2.0F+440.0F*scalef*p,settings.window_height*0.25F,440.0F*scalef*(1.0F-p),20.0F*scalef);
         glColor3ub(255,255,50);
@@ -444,7 +445,7 @@ static void hud_ingame_render(float scalex, float scalef) {
         glColor3ub(69,69,69);
         char str[128];
         sprintf(str,"Loading Map %iKB/%iKB",compressed_chunk_data_offset/1024,compressed_chunk_data_estimate/1024);
-        font_centered(settings.window_width/2.0F,130*scalef,27*scalef,str);
+        font_centered(settings.window_width/2.0F,130*scalef,27*scalef,str);*/
 
         font_select(FONT_SMALLFNT);
         glColor3f(1.0F,1.0F,0.0F);
@@ -1112,25 +1113,6 @@ static void hud_ingame_mouseclick(double x, double y, int button, int action, in
 				players[local_player_id].input.buttons.rmb = 0;
 			}
 		}
-		if(local_player_drag_active && action==WINDOW_RELEASE && players[local_player_id].held_item==TOOL_BLOCK) {
-			int* pos = camera_terrain_pick(0);
-			if(pos!=NULL && pos[1]>1 && (pow(pos[0]-camera_x,2)+pow(pos[1]-camera_y,2)+pow(pos[2]-camera_z,2))<5*5) {
-				int amount = map_cube_line(local_player_drag_x,local_player_drag_z,63-local_player_drag_y,pos[0],pos[2],63-pos[1],NULL);
-				if(amount<=local_player_blocks) {
-					struct PacketBlockLine line;
-					line.player_id = local_player_id;
-					line.sx = local_player_drag_x;
-					line.sy = local_player_drag_z;
-					line.sz = 63-local_player_drag_y;
-					line.ex = pos[0];
-					line.ey = pos[2];
-					line.ez = 63-pos[1];
-					network_send(PACKET_BLOCKLINE_ID,&line,sizeof(line));
-					local_player_blocks -= amount;
-				}
-				players[local_player_id].item_showup = window_time();
-			}
-		}
 		local_player_drag_active = 0;
 		if(action==WINDOW_PRESS && players[local_player_id].held_item==TOOL_BLOCK && window_time()-players[local_player_id].item_showup>=0.5F) {
 			int* pos = camera_terrain_pick(0);
@@ -1179,12 +1161,12 @@ static void hud_ingame_mouseclick(double x, double y, int button, int action, in
 					struct PacketGrenade g;
 					g.player_id = local_player_id;
 					g.fuse_length = max(3.0F-(window_time()-players[local_player_id].input.buttons.lmb_start),0.0F);
-					g.x = players[local_player_id].pos.x;
+					/*g.x = players[local_player_id].pos.x;
 					g.y = players[local_player_id].pos.z;
 					g.z = 63.0F-players[local_player_id].pos.y;
 					g.vx = (g.fuse_length==0.0F)?0.0F:(players[local_player_id].orientation.x+players[local_player_id].physics.velocity.x);
 					g.vy = (g.fuse_length==0.0F)?0.0F:(players[local_player_id].orientation.z+players[local_player_id].physics.velocity.z);
-					g.vz = (g.fuse_length==0.0F)?0.0F:(-players[local_player_id].orientation.y-players[local_player_id].physics.velocity.y);
+					g.vz = (g.fuse_length==0.0F)?0.0F:(-players[local_player_id].orientation.y-players[local_player_id].physics.velocity.y);*/
 					network_send(PACKET_GRENADE_ID,&g,sizeof(g));
 					read_PacketGrenade(&g,sizeof(g)); //server won't loop packet back
 					players[local_player_id].item_showup = window_time();
@@ -1487,30 +1469,17 @@ static void hud_ingame_keyboard(int key, int action, int mods, int internal) {
 				}
 				if(new_team<=255) {
 					if(network_logged_in) {
-						struct PacketChangeTeam p;
-						p.player_id = local_player_id;
+						struct PacketExistingPlayer p;
+						//p.player_id = local_player_id;
 						p.team = new_team;
-						network_send(PACKET_CHANGETEAM_ID,&p,sizeof(p));
+						p.weapon = players[local_player_id].weapon;
+						strcpy(p.name,settings.name);
+						network_send(PACKET_EXISTINGPLAYER_ID,&p,sizeof(p)-sizeof(p.name)+strlen(settings.name)+1);
 						screen_current = SCREEN_NONE;
 						return;
 					} else {
 						local_player_newteam = new_team;
-						if(new_team==TEAM_SPECTATOR) {
-							struct PacketExistingPlayer login;
-							login.player_id = local_player_id;
-							login.team = local_player_newteam;
-							login.weapon = WEAPON_RIFLE;
-							login.held_item = TOOL_GUN;
-							login.kills = 0;
-							login.blue = players[local_player_id].block.blue;
-							login.green = players[local_player_id].block.green;
-							login.red = players[local_player_id].block.red;
-							strcpy(login.name,settings.name);
-							network_send(PACKET_EXISTINGPLAYER_ID,&login,sizeof(login)-sizeof(login.name)+strlen(settings.name)+1);
-							screen_current = SCREEN_NONE;
-						} else {
-							screen_current = SCREEN_GUN_SELECT;
-						}
+						screen_current = SCREEN_GUN_SELECT;
 						return;
 					}
 				}
@@ -1534,10 +1503,12 @@ static void hud_ingame_keyboard(int key, int action, int mods, int internal) {
 				}
 				if(new_gun<255) {
 					if(network_logged_in) {
-						struct PacketChangeWeapon p;
-						p.player_id = local_player_id;
+						struct PacketExistingPlayer p;
+						//p.player_id = local_player_id;
+						p.team = players[local_player_id].team;
 						p.weapon = new_gun;
-						network_send(PACKET_CHANGEWEAPON_ID,&p,sizeof(p));
+						strcpy(p.name,settings.name);
+						network_send(PACKET_EXISTINGPLAYER_ID,&p,sizeof(p)-sizeof(p.name)+strlen(settings.name)+1);
 					} else {
 						struct PacketExistingPlayer login;
 						login.player_id = local_player_id;
