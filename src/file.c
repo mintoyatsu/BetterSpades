@@ -42,13 +42,7 @@ void file_url(char* url) {
 }
 
 int file_dir_exists(const char* path) {
-	#ifndef USE_ANDROID_FILE
-		DIR* d = opendir(path);
-	#else
-		char str[256];
-		sprintf(str,"/sdcard/BetterSpades/%s",path);
-		DIR* d = opendir(str);
-	#endif
+	DIR* d = opendir(path);
 	if(d) {
 		closedir(d);
 		return 1;
@@ -58,161 +52,55 @@ int file_dir_exists(const char* path) {
 }
 
 int file_dir_create(const char* path) {
-	#ifndef USE_ANDROID_FILE
-		mkdir(path);
-	#else
-		char str[256];
-		sprintf(str,"/sdcard/BetterSpades/%s",path);
-		mkdir(str);
-		#endif
+	mkdir(path);
 	return 1;
 }
 
 int file_exists(const char* name) {
-	#ifdef USE_ANDROID_FILE
-		void* f = file_open(name,"rb");
-		if(f==NULL)
-			return 0;
-		file_close(f);
-		return 1;
-	#else
-		return !access(name,F_OK);
-	#endif
+	return !access(name,F_OK);
 }
 
 int file_size(const char* name) {
-	#ifdef USE_ANDROID_FILE
-		struct file_handle* f = (struct file_handle*)file_open(name,"rb");
-		if(!f)
-			return 0;
-		if(f->type==FILE_SDL) {
-			int size = SDL_RWsize((struct SDL_RWops*)f->internal);
-			file_close(f);
-			return size;
-		}
-		if(f->type==FILE_STD) {
-			fseek(f->internal,0,SEEK_END);
-			int size = ftell(f->internal);
-			file_close(f);
-			return size;
-		}
+	FILE* f = fopen(name,"rb");
+	if(!f)
 		return 0;
-	#else
-		FILE* f = fopen(name,"rb");
-		if(!f)
-			return 0;
-		fseek(f,0,SEEK_END);
-		int size = ftell(f);
-		fclose(f);
-		return size;
-	#endif
+	fseek(f,0,SEEK_END);
+	int size = ftell(f);
+	fclose(f);
+	return size;
 }
 
 unsigned char* file_load(const char* name) {
-	#ifdef USE_ANDROID_FILE
-		int size = file_size(name);
-		struct file_handle* f = (struct file_handle*)file_open(name,"rb");
-		if(!f)
-			return NULL;
-		unsigned char* data = malloc(size+1);
-		CHECK_ALLOCATION_ERROR(data)
-		data[size] = 0;
-			if(f->type==FILE_SDL) {
-			int offset = 0;
-			while(1) {
-				int read = SDL_RWread((struct SDL_RWops*)f->internal,data+offset,1,size-offset);
-				if(!read)
-					break;
-				offset += read;
-			}
-			SDL_RWclose((struct SDL_RWops*)f->internal);
-			if(!offset) {
-				free(data);
-				return NULL;
-			}
-		}
-		if(f->type==FILE_STD) {
-			fread(data,size,1,f->internal);
-			fclose(f->internal);
-		}
-		return data;
-	#else
-		FILE* f;
-		f = fopen(name,"rb");
-		if (!f) {
-			log_fatal("ERROR: failed to open '%s', exiting", name);
-			exit(1);
-		}
-		fseek(f,0,SEEK_END);
-		int size = ftell(f);
-		unsigned char* data = malloc(size+1);
-		CHECK_ALLOCATION_ERROR(data)
-		data[size] = 0;
-		fseek(f,0,SEEK_SET);
-		fread(data,size,1,f);
-		fclose(f);
-		return data;
-	#endif
+	FILE* f;
+	f = fopen(name,"rb");
+	if (!f) {
+		log_fatal("ERROR: failed to open '%s', exiting", name);
+		exit(1);
+	}
+	fseek(f,0,SEEK_END);
+	int size = ftell(f);
+	unsigned char* data = malloc(size+1);
+	CHECK_ALLOCATION_ERROR(data)
+	data[size] = 0;
+	fseek(f,0,SEEK_SET);
+	fread(data,size,1,f);
+	fclose(f);
+	return data;
 }
 
 void* file_open(const char* name, const char* mode) {
-	#ifdef USE_ANDROID_FILE
-		struct file_handle* handle = malloc(sizeof(struct file_handle));
-		handle->internal = (strchr(mode,'r')!=NULL)?SDL_RWFromFile(name,mode):NULL;
-		handle->type = FILE_SDL;
-		if(!handle->internal) {
-			char str[256];
-			sprintf(str,"/sdcard/BetterSpades/%s",name);
-			handle->internal = fopen(str,mode);
-			handle->type = FILE_STD;
-			//log_warn("open %s %i",str,handle->internal);
-		}
-		if(!handle->internal) {
-			free(handle);
-			return NULL;
-		}
-		return handle;
-	#else
-		return fopen(name,mode);
-	#endif
+	return fopen(name,mode);
 }
 
 void file_printf(void* file, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	#ifdef USE_ANDROID_FILE
-		struct file_handle* f = (struct file_handle*)file;
-		if(f->type==FILE_SDL) {
-			char str[256];
-			vsprintf(str,fmt,args);
-			int written = 0;
-			int total = strlen(str);
-			while(written<total)
-				written += SDL_RWwrite((struct SDL_RWops*)f->internal,str+written,1,total-written);
-		}
-		if(f->type==FILE_STD) {
-			log_warn("%i %i",f->internal,f);
-			vfprintf((FILE*)f->internal,fmt,args);
-		}
-	#else
-		vfprintf((FILE*)file,fmt,args);
-	#endif
+	vfprintf((FILE*)file,fmt,args);
 	va_end(args);
 }
 
 void file_close(void* file) {
-	#ifdef USE_ANDROID_FILE
-		struct file_handle* f = (struct file_handle*)file;
-		if(f->type==FILE_SDL) {
-			SDL_RWclose((struct SDL_RWops*)f->internal);
-		}
-		if(f->type==FILE_STD) {
-			fclose((FILE*)f->internal);
-		}
-		free(f);
-	#else
-		fclose((FILE*)file);
-	#endif
+	fclose((FILE*)file);
 }
 
 float buffer_readf(unsigned char* buffer, int index) {

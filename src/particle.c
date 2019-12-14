@@ -208,7 +208,6 @@ int particle_render() {
 	int color_index = 0;
 	int vertex_index = 0;
 
-	#ifndef OPENGL_ES
 	if(particle_remove<=particle_insert) {
 		for(int k=particle_remove;k<particle_insert;k++)
 			particle_render_single(k,&vertex_index,&color_index);
@@ -229,7 +228,6 @@ int particle_render() {
 		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
-	#endif
 
 	return vertex_index/72;
 }

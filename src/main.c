@@ -19,24 +19,6 @@
 
 #include "common.h"
 
-#ifdef OPENGL_ES
-void glColor3f(float r, float g, float b) {
-	glColor4f(r,g,b,1.0F);
-}
-
-void glColor3ub(unsigned char r, unsigned char g, unsigned char b) {
-	glColor4ub(r,g,b,255);
-}
-
-void glDepthRange(float near, float far) {
-	glDepthRangef(near,far);
-}
-
-void glClearDepth(float x) {
-	glClearDepthf(x);
-}
-#endif
-
 int fps = 0;
 
 int ms_seed = 1;
@@ -85,11 +67,7 @@ void drawScene() {
 	chunk_draw_visible();
 
 	if(settings.smooth_fog) {
-		#ifdef OPENGL_ES
-			glFogx(GL_FOG_MODE,GL_EXP2);
-		#else
-			glFogi(GL_FOG_MODE,GL_EXP2);
-		#endif
+		glFogi(GL_FOG_MODE,GL_EXP2);
 		glFogf(GL_FOG_DENSITY,0.015F);
 		glFogfv(GL_FOG_COLOR,fog_color);
 		glEnable(GL_FOG);
@@ -273,7 +251,7 @@ void display() {
 			int* pos = NULL;
 			switch(players[local_id].held_item) {
 				case TOOL_BLOCK:
-					if(!players[local_id].input.keys.sprint && render_fpv) {
+					if(render_fpv) {
 						if(is_local)
 							pos = camera_terrain_pick(0);
 						else
@@ -360,15 +338,7 @@ void display() {
 					matrix_translate(0.0F,-0.25F,0.0F);
 					matrix_upload_p();
 					matrix_select(matrix_model);
-					#ifdef OPENGL_ES
-					if(camera_mode==CAMERAMODE_FPS)
-						glx_disable_sphericalfog();
-					#endif
 					player_render(&players[local_player_id],local_player_id,NULL,1,NULL);
-					#ifdef OPENGL_ES
-					if(camera_mode==CAMERAMODE_FPS)
-						glx_enable_sphericalfog();
-					#endif
 					matrix_select(matrix_projection);
 					matrix_pop();
 					matrix_select(matrix_model);
@@ -426,11 +396,7 @@ void init() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-	#ifdef OPENGL_ES
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_FASTEST);
-	#else
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-	#endif
 	glClearDepth(1.0F);
 	glDepthFunc(GL_LEQUAL);
 	glShadeModel(GL_SMOOTH);
@@ -463,8 +429,6 @@ void init() {
 	chunk_init();
 
 	weapon_set();
-
-	rpc_init();
 }
 
 void reshape(struct window_instance* window, int width, int height) {
@@ -502,7 +466,6 @@ void keys(struct window_instance* window, int key, int scancode, int action, int
 	if(action==WINDOW_RELEASE && !config_key(key)->toggle)
 		window_pressed_keys[key] = 0;
 
-	#ifdef USE_GLFW
 	if(key==WINDOW_KEY_FULLSCREEN && action==WINDOW_PRESS) { //switch between fullscreen
 		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		if(!settings.fullscreen) {
@@ -513,7 +476,6 @@ void keys(struct window_instance* window, int key, int scancode, int action, int
 			settings.fullscreen = 0;
 		}
 	}
-	#endif
 
 	if(key==WINDOW_KEY_SCREENSHOT && action==WINDOW_PRESS) { //take screenshot
 		time_t pic_time;
@@ -560,10 +522,9 @@ void mouse_scroll(struct window_instance* window, double xoffset, double yoffset
 }
 
 void deinit() {
-	rpc_deinit();
 	ping_deinit();
-	if(settings.show_news)
-		file_url("https://www.buildandshoot.com/news/");
+	//if(settings.show_news)
+	//	file_url("https://www.buildandshoot.com/news/");
 	if(network_connected)
 		network_disconnect();
 	window_deinit();
@@ -596,16 +557,12 @@ int main(int argc, char** argv) {
 	settings.smooth_fog = 0;
 	strcpy(settings.name,"DEV_CLIENT");
 
-	#ifdef USE_TOUCH
-		mkdir("/sdcard/BetterSpades");
-	#else
-		if(!file_dir_exists("logs"))
-			file_dir_create("logs");
-		if(!file_dir_exists("cache"))
-			file_dir_create("cache");
-		if(!file_dir_exists("screenshots"))
-			file_dir_create("screenshots");
-	#endif
+	if(!file_dir_exists("logs"))
+		file_dir_create("logs");
+	if(!file_dir_exists("cache"))
+		file_dir_create("cache");
+	if(!file_dir_exists("screenshots"))
+		file_dir_create("screenshots");
 
 	log_set_level(LOG_INFO);
 
@@ -622,10 +579,8 @@ int main(int argc, char** argv) {
 
 	window_init();
 
-	#ifndef OPENGL_ES
 	if(glewInit())
 		log_error("Could not load extended OpenGL functions!");
-	#endif
 
 	log_info("Vendor: %s",glGetString(GL_VENDOR));
 	log_info("Renderer: %s",glGetString(GL_RENDERER));
@@ -696,8 +651,6 @@ int main(int argc, char** argv) {
 		sound_update();
 		network_update();
 		window_update();
-
-		rpc_update();
 
 		if(settings.vsync>1 && (window_time()-last_frame_start)<(1.0F/settings.vsync)) {
 			double sleep_s = 1.0F/settings.vsync-(window_time()-last_frame_start);

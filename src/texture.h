@@ -26,18 +26,9 @@ struct texture {
 extern struct texture texture_minimap;
 extern struct texture texture_gradient;
 
-extern struct texture texture_health;
-extern struct texture texture_block;
-extern struct texture texture_grenade;
-extern struct texture texture_ammo_semi;
-extern struct texture texture_ammo_smg;
-extern struct texture texture_ammo_shotgun;
-
 extern struct texture texture_color_selection;
 
 extern struct texture texture_zoom_semi;
-extern struct texture texture_zoom_smg;
-extern struct texture texture_zoom_shotgun;
 
 extern struct texture texture_white;
 extern struct texture texture_target;

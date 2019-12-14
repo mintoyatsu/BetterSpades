@@ -25,19 +25,8 @@ struct hud {
 	void (*input_mouselocation) (double x, double y);
 	void (*input_mouseclick) (double x, double y, int button, int action, int mods);
 	void (*input_mousescroll) (double yoffset);
-	void (*input_touch) (void* finger, int action, float x, float y, float dx, float dy);
 	char render_world;
 	char render_localplayer;
-};
-
-struct serverlist_entry {
-	int current, max;
-	char name[32];
-	char map[21];
-	char gamemode[8];
-	int ping;
-	char identifier[32];
-	char country[4];
 };
 
 extern int screen_current;

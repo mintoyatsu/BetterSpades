@@ -17,30 +17,10 @@
     along with BetterSpades.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPENGL_ES
-	#define GLEW_STATIC
-	#include <GL/glew.h>
-
-	#include <enet/enet.h>
-#else
-	#ifdef USE_SDL
-		#include <SDL2/SDL_opengles.h>
-	#endif
-	#include <enet/enet.h>
-
-	void glColor3f(float r, float g, float b);
-	void glColor3ub(unsigned char r, unsigned char g, unsigned char b);
-	void glDepthRange(float near, float far);
-	void glClearDepth(float x);
-#endif
-
-#ifdef USE_GLFW
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <enet/enet.h>
 #include <GLFW/glfw3.h>
-#endif
-
-#ifdef USE_SDL
-#include <SDL2/SDL.h>
-#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -55,10 +35,6 @@
 #include <pthread.h>
 #include <limits.h>
 #include <dirent.h>
-
-#ifdef USE_RPC
-	#include <discord_rpc.h>
-#endif
 
 #include "lodepng/lodepng.h"
 #include "libdeflate.h"
@@ -169,7 +145,6 @@ const char* reason_disconnect(int code);
 
 #define SCREEN_NONE			0
 #define SCREEN_TEAM_SELECT	1
-#define SCREEN_GUN_SELECT	2
 
 extern int ms_seed;
 int ms_rand(void);

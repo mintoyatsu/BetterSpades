@@ -316,17 +316,10 @@ void map_collapsing_render() {
 				map_collapsing_structures[k].has_displaylist = 1;
 				glx_displaylist_create(&map_collapsing_structures[k].displaylist);
 
-				#ifdef OPENGL_ES
-					float* vertices = malloc(map_collapsing_structures[k].voxel_count*6*6*3*sizeof(float)); //max space needed
-					CHECK_ALLOCATION_ERROR(vertices)
-					unsigned char* colors = malloc(map_collapsing_structures[k].voxel_count*6*6*4*sizeof(unsigned char));
-					CHECK_ALLOCATION_ERROR(colors)
-				#else
-					float* vertices = malloc(map_collapsing_structures[k].voxel_count*6*4*3*sizeof(float)); //same
-					CHECK_ALLOCATION_ERROR(vertices)
-					unsigned char* colors = malloc(map_collapsing_structures[k].voxel_count*6*4*4*sizeof(unsigned char));
-					CHECK_ALLOCATION_ERROR(colors)
-				#endif
+				float* vertices = malloc(map_collapsing_structures[k].voxel_count*6*4*3*sizeof(float)); //same
+				CHECK_ALLOCATION_ERROR(vertices)
+				unsigned char* colors = malloc(map_collapsing_structures[k].voxel_count*6*4*4*sizeof(unsigned char));
+				CHECK_ALLOCATION_ERROR(colors)
 
 				int vertex_index = 0;
 				int color_index = 0;

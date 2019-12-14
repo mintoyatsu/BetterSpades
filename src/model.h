@@ -47,21 +47,17 @@ extern struct kv6_t model_playerleg;
 extern struct kv6_t model_playerlegc;
 extern struct kv6_t model_intel;
 extern struct kv6_t model_tent;
+extern struct kv6_t model_team;
 
 extern struct kv6_t model_semi;
-extern struct kv6_t model_smg;
-extern struct kv6_t model_shotgun;
+extern struct kv6_t model_semi_tracer;
+extern struct kv6_t model_semi_casing;
+
+extern struct kv6_t model_pickaxe;
 extern struct kv6_t model_spade;
 extern struct kv6_t model_block;
+
 extern struct kv6_t model_grenade;
-
-extern struct kv6_t model_semi_tracer;
-extern struct kv6_t model_smg_tracer;
-extern struct kv6_t model_shotgun_tracer;
-
-extern struct kv6_t model_semi_casing;
-extern struct kv6_t model_smg_casing;
-extern struct kv6_t model_shotgun_casing;
 
 void kv6_calclight(int x, int y, int z);
 void kv6_boundingbox(struct kv6_t* kv6, AABB* bb);

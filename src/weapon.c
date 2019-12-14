@@ -46,10 +46,10 @@ void weapon_update() {
                 struct Sound_wav* snd;
                 if(local_player_ammo<6) {
                     weapon_reload_start = window_time();
-                    snd = &sound_shotgun_reload;
+                    snd = &sound_rifle_reload; //shotgun
                 } else {
                     weapon_reload_inprogress = 0;
-                    snd = &sound_shotgun_cock;
+                    snd = &sound_rifle_reload; //shotgun
                 }
                 sound_create(NULL,SOUND_LOCAL,snd,0.0F,0.0F,0.0F);
             }
@@ -120,9 +120,9 @@ struct Sound_wav* weapon_sound(int gun) {
         case WEAPON_RIFLE:
             return &sound_rifle_shoot;
         case WEAPON_SMG:
-            return &sound_smg_shoot;
+            return &sound_rifle_shoot;
         case WEAPON_SHOTGUN:
-            return &sound_shotgun_shoot;
+            return &sound_rifle_shoot;
 		default:
 			return NULL;
     }
@@ -133,9 +133,9 @@ struct Sound_wav* weapon_sound_reload(int gun) {
         case WEAPON_RIFLE:
             return &sound_rifle_reload;
         case WEAPON_SMG:
-            return &sound_smg_reload;
+            return &sound_rifle_reload;
         case WEAPON_SHOTGUN:
-            return &sound_shotgun_reload;
+            return &sound_rifle_reload;
 		default:
 			return NULL;
     }
@@ -206,16 +206,7 @@ int weapon_ammo_reserved(int gun) {
 }
 
 struct kv6_t* weapon_casing(int gun) {
-	switch(gun) {
-		case WEAPON_RIFLE:
-			return &model_semi_casing;
-		case WEAPON_SMG:
-			return &model_smg_casing;
-		case WEAPON_SHOTGUN:
-			return &model_shotgun_casing;
-		default:
-			return NULL;
-	}
+	return &model_semi_casing;
 }
 
 void weapon_set() {
@@ -327,8 +318,7 @@ void weapon_shoot() {
         }
 
         tracer_pvelocity(o,&players[local_player_id]);
-        tracer_add(players[local_player_id].weapon,
-                   players[local_player_id].physics.eye.x,players[local_player_id].physics.eye.y+player_height(&players[local_player_id]),players[local_player_id].physics.eye.z,
+        tracer_add(players[local_player_id].physics.eye.x,players[local_player_id].physics.eye.y+player_height(&players[local_player_id]),players[local_player_id].physics.eye.z,
                    o[0],o[1],o[2]
                   );
     }

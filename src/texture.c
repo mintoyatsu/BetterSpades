@@ -24,18 +24,9 @@
 struct texture texture_minimap;
 struct texture texture_gradient;
 
-struct texture texture_health;
-struct texture texture_block;
-struct texture texture_grenade;
-struct texture texture_ammo_semi;
-struct texture texture_ammo_smg;
-struct texture texture_ammo_shotgun;
-
 struct texture texture_color_selection;
 
 struct texture texture_zoom_semi;
-struct texture texture_zoom_smg;
-struct texture texture_zoom_shotgun;
 
 struct texture texture_white;
 struct texture texture_target;
@@ -345,23 +336,13 @@ void texture_gradient_fog(unsigned int* gradient) {
 }
 
 void texture_init() {
-    texture_create(&texture_health,"png/health.png");
-    texture_create(&texture_block,"png/block.png");
-    texture_create(&texture_grenade,"png/grenade.png");
-    texture_create(&texture_ammo_semi,"png/semiammo.png");
-    texture_create(&texture_ammo_smg,"png/smgammo.png");
-    texture_create(&texture_ammo_shotgun,"png/shotgunammo.png");
-
     texture_create(&texture_zoom_semi,"png/semi.png");
-    texture_create(&texture_zoom_smg,"png/smg.png");
-    texture_create(&texture_zoom_shotgun,"png/shotgun.png");
 
     texture_create(&texture_white,"png/white.png");
     texture_create(&texture_target,"png/target.png");
     texture_create(&texture_icon,"png/icon.png");
 
     texture_create(&texture_ui_wait,"png/ui/wait.png");
-	texture_filter(&texture_ui_wait,TEXTURE_FILTER_LINEAR);
     texture_create(&texture_ui_join,"png/ui/join.png");
     texture_create(&texture_ui_reload,"png/ui/reload.png");
     texture_create(&texture_ui_bg,"png/ui/bg.png");
@@ -371,16 +352,7 @@ void texture_init() {
 	texture_create(&texture_ui_arrow,"png/ui/arrow.png");
 	texture_create(&texture_ui_arrow2,"png/ui/arrow2.png");
 	texture_create(&texture_ui_flags,"png/ui/flags.png");
-	texture_filter(&texture_ui_flags,TEXTURE_FILTER_LINEAR);
 	texture_create(&texture_ui_alert,"png/ui/alert.png");
-	texture_filter(&texture_ui_alert,TEXTURE_FILTER_LINEAR);
-
-	#ifdef USE_TOUCH
-		texture_create(&texture_ui_knob,"png/ui/knob.png");
-		texture_filter(&texture_ui_knob,TEXTURE_FILTER_LINEAR);
-		texture_create(&texture_ui_joystick,"png/ui/joystick.png");
-		texture_filter(&texture_ui_joystick,TEXTURE_FILTER_LINEAR);
-	#endif
 
     unsigned int* pixels = malloc(64*64*sizeof(unsigned int));
     CHECK_ALLOCATION_ERROR(pixels)

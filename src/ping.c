@@ -18,7 +18,6 @@
 */
 
 #include "common.h"
-#include "parson.h"
 
 struct list list_pings;
 ENetSocket sock, lan;
@@ -107,28 +106,7 @@ void* ping_update(void* data) {
 		}
 
 		if(retry)
-			log_warn("Ping timeout on some server(s), retrying");
-
-		buf.dataLength = 512;
-		memset(tmp,0,buf.dataLength);
-		int length = enet_socket_receive(lan,&from,&buf,1);
-		if(length) {
-			struct serverlist_entry e;
-
-			strcpy(e.country,"LAN");
-			e.ping = ceil((window_time()-ping_start)*1000.0F);
-			snprintf(e.identifier,sizeof(e.identifier)-1,"aos://%i:%i",from.host,from.port);
-
-			JSON_Value* js = json_parse_string(tmp);
-			JSON_Object* root = json_value_get_object(js);
-			strncpy(e.name,json_object_get_string(root,"name"),sizeof(e.name)-1);
-			strncpy(e.gamemode,json_object_get_string(root,"game_mode"),sizeof(e.gamemode)-1);
-			strncpy(e.map,json_object_get_string(root,"map"),sizeof(e.map)-1);
-			e.current = json_object_get_number(root,"players_current");
-			e.max = json_object_get_number(root,"players_max");
-			json_value_free(js);
-			ping_result(&e,window_time()-ping_start,NULL);
-		}
+			log_warn("Ping timeout, retrying");
 
 		if(!list_size(&list_pings)) {
 			ping_finished();

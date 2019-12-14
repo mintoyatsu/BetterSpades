@@ -636,13 +636,8 @@ void chunk_generate_greedy(struct chunk_worker* worker) {
 //+Z = 0.625
 //-Z = 0.875
 
-#ifdef OPENGL_ES
-	#define VERTEX_ADVANCE	(3*6*sizeof(short))
-	#define COLOR_ADVANCE	(4*6*sizeof(unsigned char))
-#else
-	#define VERTEX_ADVANCE	(3*4*sizeof(short))
-	#define COLOR_ADVANCE	(3*4*sizeof(unsigned char))
-#endif
+#define VERTEX_ADVANCE	(3*4*sizeof(short))
+#define COLOR_ADVANCE	(3*4*sizeof(unsigned char))
 
 void chunk_generate_naive(struct chunk_worker* worker) {
 	int size = 0;
@@ -682,17 +677,10 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						}
 						size++;
 
-						#ifdef OPENGL_ES
-						for(int l=0;l<6;l++) {
-						#else
 						for(int l=0;l<4;l++) {
-						#endif
 							worker->color_data[chunk_color_index++] = (int)(r*0.875F);
 							worker->color_data[chunk_color_index++] = (int)(g*0.875F);
 							worker->color_data[chunk_color_index++] = (int)(b*0.875F);
-						#ifdef OPENGL_ES
-							worker->color_data[chunk_color_index++] = 255;
-						#endif
 						}
 
 						worker->vertex_data[chunk_vertex_index++] = x;
@@ -706,16 +694,6 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
 						worker->vertex_data[chunk_vertex_index++] = z;
-
-						#ifdef OPENGL_ES
-						worker->vertex_data[chunk_vertex_index++] = x;
-						worker->vertex_data[chunk_vertex_index++] = y;
-						worker->vertex_data[chunk_vertex_index++] = z;
-
-						worker->vertex_data[chunk_vertex_index++] = x+1;
-						worker->vertex_data[chunk_vertex_index++] = y+1;
-						worker->vertex_data[chunk_vertex_index++] = z;
-						#endif
 
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y;
@@ -744,17 +722,10 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						}
 						size++;
 
-						#ifdef OPENGL_ES
-						for(int l=0;l<6;l++) {
-						#else
 						for(int l=0;l<4;l++) {
-						#endif
 							worker->color_data[chunk_color_index++] = (int)(r*0.625F);
 							worker->color_data[chunk_color_index++] = (int)(g*0.625F);
 							worker->color_data[chunk_color_index++] = (int)(b*0.625F);
-						#ifdef OPENGL_ES
-							worker->color_data[chunk_color_index++] = 255;
-						#endif
 						}
 
 						worker->vertex_data[chunk_vertex_index++] = x;
@@ -768,16 +739,6 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
 						worker->vertex_data[chunk_vertex_index++] = z+1;
-
-						#ifdef OPENGL_ES
-						worker->vertex_data[chunk_vertex_index++] = x;
-						worker->vertex_data[chunk_vertex_index++] = y;
-						worker->vertex_data[chunk_vertex_index++] = z+1;
-
-						worker->vertex_data[chunk_vertex_index++] = x+1;
-						worker->vertex_data[chunk_vertex_index++] = y+1;
-						worker->vertex_data[chunk_vertex_index++] = z+1;
-						#endif
 
 						worker->vertex_data[chunk_vertex_index++] = x;
 						worker->vertex_data[chunk_vertex_index++] = y+1,
@@ -806,17 +767,10 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						}
 						size++;
 
-						#ifdef OPENGL_ES
-						for(int l=0;l<6;l++) {
-						#else
 						for(int l=0;l<4;l++) {
-						#endif
 							worker->color_data[chunk_color_index++] = (int)(r*0.75F);
 							worker->color_data[chunk_color_index++] = (int)(g*0.75F);
 							worker->color_data[chunk_color_index++] = (int)(b*0.75F);
-						#ifdef OPENGL_ES
-							worker->color_data[chunk_color_index++] = 255;
-						#endif
 						}
 
 						worker->vertex_data[chunk_vertex_index++] = x;
@@ -830,16 +784,6 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						worker->vertex_data[chunk_vertex_index++] = x;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
 						worker->vertex_data[chunk_vertex_index++] = z+1;
-
-						#ifdef OPENGL_ES
-						worker->vertex_data[chunk_vertex_index++] = x;
-						worker->vertex_data[chunk_vertex_index++] = y;
-						worker->vertex_data[chunk_vertex_index++] = z;
-
-						worker->vertex_data[chunk_vertex_index++] = x;
-						worker->vertex_data[chunk_vertex_index++] = y+1;
-						worker->vertex_data[chunk_vertex_index++] = z+1;
-						#endif
 
 						worker->vertex_data[chunk_vertex_index++] = x;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
@@ -868,17 +812,10 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						}
 						size++;
 
-						#ifdef OPENGL_ES
-						for(int l=0;l<6;l++) {
-						#else
 						for(int l=0;l<4;l++) {
-						#endif
 							worker->color_data[chunk_color_index++] = (int)(r*0.75F);
 							worker->color_data[chunk_color_index++] = (int)(g*0.75F);
 							worker->color_data[chunk_color_index++] = (int)(b*0.75F);
-						#ifdef OPENGL_ES
-							worker->color_data[chunk_color_index++] = 255;
-						#endif
 						}
 
 						worker->vertex_data[chunk_vertex_index++] = x+1;
@@ -892,16 +829,6 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
 						worker->vertex_data[chunk_vertex_index++] = z+1;
-
-						#ifdef OPENGL_ES
-						worker->vertex_data[chunk_vertex_index++] = x+1;
-						worker->vertex_data[chunk_vertex_index++] = y;
-						worker->vertex_data[chunk_vertex_index++] = z;
-
-						worker->vertex_data[chunk_vertex_index++] = x+1;
-						worker->vertex_data[chunk_vertex_index++] = y+1,
-						worker->vertex_data[chunk_vertex_index++] = z+1;
-						#endif
 
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y;
@@ -924,17 +851,10 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						}
 						size++;
 
-						#ifdef OPENGL_ES
-						for(int l=0;l<6;l++) {
-						#else
 						for(int l=0;l<4;l++) {
-						#endif
 							worker->color_data[chunk_color_index++] = (int)(r);
 							worker->color_data[chunk_color_index++] = (int)(g);
 							worker->color_data[chunk_color_index++] = (int)(b);
-						#ifdef OPENGL_ES
-							worker->color_data[chunk_color_index++] = 255;
-						#endif
 						}
 
 						worker->vertex_data[chunk_vertex_index++] = x;
@@ -948,16 +868,6 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
 						worker->vertex_data[chunk_vertex_index++] = z+1;
-
-						#ifdef OPENGL_ES
-						worker->vertex_data[chunk_vertex_index++] = x;
-						worker->vertex_data[chunk_vertex_index++] = y+1;
-						worker->vertex_data[chunk_vertex_index++] = z;
-
-						worker->vertex_data[chunk_vertex_index++] = x+1;
-						worker->vertex_data[chunk_vertex_index++] = y+1;
-						worker->vertex_data[chunk_vertex_index++] = z+1;
-						#endif
 
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y+1;
@@ -974,17 +884,10 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						}
 						size++;
 
-						#ifdef OPENGL_ES
-						for(int l=0;l<6;l++) {
-						#else
 						for(int l=0;l<4;l++) {
-						#endif
 							worker->color_data[chunk_color_index++] = (int)(r*0.5F);
 							worker->color_data[chunk_color_index++] = (int)(g*0.5F);
 							worker->color_data[chunk_color_index++] = (int)(b*0.5F);
-						#ifdef OPENGL_ES
-							worker->color_data[chunk_color_index++] = 255;
-						#endif
 						}
 
 						worker->vertex_data[chunk_vertex_index++] = x;
@@ -998,16 +901,6 @@ void chunk_generate_naive(struct chunk_worker* worker) {
 						worker->vertex_data[chunk_vertex_index++] = x+1;
 						worker->vertex_data[chunk_vertex_index++] = y;
 						worker->vertex_data[chunk_vertex_index++] = z+1;
-
-						#ifdef OPENGL_ES
-						worker->vertex_data[chunk_vertex_index++] = x;
-						worker->vertex_data[chunk_vertex_index++] = y;
-						worker->vertex_data[chunk_vertex_index++] = z;
-
-						worker->vertex_data[chunk_vertex_index++] = x+1;
-						worker->vertex_data[chunk_vertex_index++] = y;
-						worker->vertex_data[chunk_vertex_index++] = z+1;
-						#endif
 
 						worker->vertex_data[chunk_vertex_index++] = x;
 						worker->vertex_data[chunk_vertex_index++] = y;

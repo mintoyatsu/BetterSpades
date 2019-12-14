@@ -29,21 +29,17 @@ struct kv6_t model_playerleg;
 struct kv6_t model_playerlegc;
 struct kv6_t model_intel;
 struct kv6_t model_tent;
+struct kv6_t model_team;
 
 struct kv6_t model_semi;
-struct kv6_t model_smg;
-struct kv6_t model_shotgun;
+struct kv6_t model_semi_tracer;
+struct kv6_t model_semi_casing;
+
+struct kv6_t model_pickaxe;
 struct kv6_t model_spade;
 struct kv6_t model_block;
+
 struct kv6_t model_grenade;
-
-struct kv6_t model_semi_tracer;
-struct kv6_t model_smg_tracer;
-struct kv6_t model_shotgun_tracer;
-
-struct kv6_t model_semi_casing;
-struct kv6_t model_smg_casing;
-struct kv6_t model_shotgun_casing;
 
 void kv6_init() {
 	kv6_load(&model_playerdead,file_load("kv6/playerdead.kv6"),0.1F);
@@ -53,25 +49,20 @@ void kv6_init() {
 	kv6_load(&model_playerarms,file_load("kv6/playerarms.kv6"),0.1F);
 	kv6_load(&model_playerleg,file_load("kv6/playerleg.kv6"),0.1F);
 	kv6_load(&model_playerlegc,file_load("kv6/playerlegc.kv6"),0.1F);
-
 	kv6_load(&model_intel,file_load("kv6/intel.kv6"),0.2F);
 	kv6_load(&model_tent,file_load("kv6/cp.kv6"),0.278F);
+	kv6_load(&model_team,file_load("kv6/team.kv6"),0.0125F);
 
 	kv6_load(&model_semi,file_load("kv6/semi.kv6"),0.05F);
-	kv6_load(&model_smg,file_load("kv6/smg.kv6"),0.05F);
-	kv6_load(&model_shotgun,file_load("kv6/shotgun.kv6"),0.05F);
+	kv6_load(&model_semi_tracer,file_load("kv6/semitracer.kv6"),0.05F);
+	kv6_load(&model_semi_casing,file_load("kv6/semicasing.kv6"),0.0125F);
+
+	kv6_load(&model_pickaxe,file_load("kv6/pickaxe.kv6"),0.05F);
 	kv6_load(&model_spade,file_load("kv6/spade.kv6"),0.05F);
 	kv6_load(&model_block,file_load("kv6/block.kv6"),0.05F);
 	model_block.colorize = 1;
+
 	kv6_load(&model_grenade,file_load("kv6/grenade.kv6"),0.05F);
-
-	kv6_load(&model_semi_tracer,file_load("kv6/semitracer.kv6"),0.05F);
-	kv6_load(&model_smg_tracer,file_load("kv6/smgtracer.kv6"),0.05F);
-	kv6_load(&model_shotgun_tracer,file_load("kv6/shotguntracer.kv6"),0.05F);
-
-	kv6_load(&model_semi_casing,file_load("kv6/semicasing.kv6"),0.0125F);
-	kv6_load(&model_smg_casing,file_load("kv6/smgcasing.kv6"),0.0125F);
-	kv6_load(&model_shotgun_casing,file_load("kv6/shotguncasing.kv6"),0.0125F);
 }
 
 void kv6_rebuild_all() {
@@ -85,22 +76,18 @@ void kv6_rebuild_all() {
 	kv6_rebuild(&model_playerlegc);
 	kv6_rebuild(&model_intel);
 	kv6_rebuild(&model_tent);
+	kv6_rebuild(&model_team);
 }
 
 void kv6_rebuild_complete() {
 	kv6_rebuild_all();
 	kv6_rebuild(&model_semi);
-	kv6_rebuild(&model_smg);
-	kv6_rebuild(&model_shotgun);
+	kv6_rebuild(&model_semi_tracer);
+	kv6_rebuild(&model_semi_casing);
+	kv6_rebuild(&model_pickaxe);
 	kv6_rebuild(&model_spade);
 	kv6_rebuild(&model_block);
 	kv6_rebuild(&model_grenade);
-	kv6_rebuild(&model_semi_tracer);
-	kv6_rebuild(&model_smg_tracer);
-	kv6_rebuild(&model_shotgun_tracer);
-	kv6_rebuild(&model_semi_casing);
-	kv6_rebuild(&model_smg_casing);
-	kv6_rebuild(&model_shotgun_casing);
 }
 
 void kv6_load(struct kv6_t* kv6, unsigned char* bytes, float scale) {
@@ -242,21 +229,12 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 		if(!kv6->has_display_list) {
 			int size = kv6->voxel_count*6;
 
-			#ifdef OPENGL_ES
-			kv6->vertices_final = malloc(size*3*6*sizeof(float));
-			CHECK_ALLOCATION_ERROR(kv6->vertices_final)
-			kv6->colors_final = malloc(size*4*6*sizeof(unsigned char)*2);
-			CHECK_ALLOCATION_ERROR(kv6->colors_final)
-			kv6->normals_final = malloc(size*3*6*sizeof(unsigned char));
-			CHECK_ALLOCATION_ERROR(kv6->normals_final)
-			#else
 			kv6->vertices_final = malloc(size*3*4*sizeof(float));
 			CHECK_ALLOCATION_ERROR(kv6->vertices_final)
 			kv6->colors_final = malloc(size*4*4*sizeof(unsigned char)*2);
 			CHECK_ALLOCATION_ERROR(kv6->colors_final)
 			kv6->normals_final = malloc(size*3*4*sizeof(unsigned char));
 			CHECK_ALLOCATION_ERROR(kv6->normals_final)
-			#endif
 
 			if(!kv6->colorize) {
 				glx_displaylist_create(&kv6->display_list[0]);
@@ -309,18 +287,6 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2]+kv6->scale;
 
-						#ifdef OPENGL_ES
-						alpha[i++] = 1.0F;
-
-						kv6->vertices_final[v++] = p[0];
-						kv6->vertices_final[v++] = p[1]+kv6->scale;
-						kv6->vertices_final[v++] = p[2];
-
-						kv6->vertices_final[v++] = p[0]+kv6->scale;
-						kv6->vertices_final[v++] = p[1]+kv6->scale;
-						kv6->vertices_final[v++] = p[2]+kv6->scale;
-						#endif
-
 						kv6->vertices_final[v++] = p[0]+kv6->scale;
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2];
@@ -340,18 +306,6 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 						kv6->vertices_final[v++] = p[0]+kv6->scale;
 						kv6->vertices_final[v++] = p[1];
 						kv6->vertices_final[v++] = p[2]+kv6->scale;
-
-						#ifdef OPENGL_ES
-						alpha[i++] = 0.6F;
-
-						kv6->vertices_final[v++] = p[0];
-						kv6->vertices_final[v++] = p[1];
-						kv6->vertices_final[v++] = p[2];
-
-						kv6->vertices_final[v++] = p[0]+kv6->scale;
-						kv6->vertices_final[v++] = p[1];
-						kv6->vertices_final[v++] = p[2]+kv6->scale;
-						#endif
 
 						kv6->vertices_final[v++] = p[0];
 						kv6->vertices_final[v++] = p[1];
@@ -373,18 +327,6 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2];
 
-						#ifdef OPENGL_ES
-						alpha[i++] = 0.95F;
-
-						kv6->vertices_final[v++] = p[0];
-						kv6->vertices_final[v++] = p[1];
-						kv6->vertices_final[v++] = p[2];
-
-						kv6->vertices_final[v++] = p[0]+kv6->scale;
-						kv6->vertices_final[v++] = p[1]+kv6->scale;
-						kv6->vertices_final[v++] = p[2];
-						#endif
-
 						kv6->vertices_final[v++] = p[0]+kv6->scale;
 						kv6->vertices_final[v++] = p[1];
 						kv6->vertices_final[v++] = p[2];
@@ -404,18 +346,6 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 						kv6->vertices_final[v++] = p[0]+kv6->scale;
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2]+kv6->scale;
-
-						#ifdef OPENGL_ES
-						alpha[i++] = 0.9F;
-
-						kv6->vertices_final[v++] = p[0];
-						kv6->vertices_final[v++] = p[1];
-						kv6->vertices_final[v++] = p[2]+kv6->scale;
-
-						kv6->vertices_final[v++] = p[0]+kv6->scale;
-						kv6->vertices_final[v++] = p[1]+kv6->scale;
-						kv6->vertices_final[v++] = p[2]+kv6->scale;
-						#endif
 
 						kv6->vertices_final[v++] = p[0];
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
@@ -437,18 +367,6 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2]+kv6->scale;
 
-						#ifdef OPENGL_ES
-						alpha[i++] = 0.85F;
-
-						kv6->vertices_final[v++] = p[0];
-						kv6->vertices_final[v++] = p[1];
-						kv6->vertices_final[v++] = p[2];
-
-						kv6->vertices_final[v++] = p[0];
-						kv6->vertices_final[v++] = p[1]+kv6->scale;
-						kv6->vertices_final[v++] = p[2]+kv6->scale;
-						#endif
-
 						kv6->vertices_final[v++] = p[0];
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2];
@@ -469,37 +387,17 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 						kv6->vertices_final[v++] = p[1]+kv6->scale;
 						kv6->vertices_final[v++] = p[2]+kv6->scale;
 
-						#ifdef OPENGL_ES
-						alpha[i++] = 0.8F;
-
-						kv6->vertices_final[v++] = p[0]+kv6->scale;
-						kv6->vertices_final[v++] = p[1];
-						kv6->vertices_final[v++] = p[2];
-
-						kv6->vertices_final[v++] = p[0]+kv6->scale;
-						kv6->vertices_final[v++] = p[1]+kv6->scale;
-						kv6->vertices_final[v++] = p[2]+kv6->scale;
-						#endif
-
 						kv6->vertices_final[v++] = p[0]+kv6->scale;
 						kv6->vertices_final[v++] = p[1];
 						kv6->vertices_final[v++] = p[2]+kv6->scale;
 						alpha[i++] = 0.8F;
 					}
 
-					#ifdef OPENGL_ES
-					for(int k=0;k<i*3;k++) {
-						kv6->colors_final[c++] = r*alpha[k/3];
-						kv6->colors_final[c++] = g*alpha[k/3];
-						kv6->colors_final[c++] = b*alpha[k/3];
-						kv6->colors_final[c++] = 255;
-					#else
 					for(int k=0;k<i*4;k++) {
 						kv6->colors_final[c++] = r*alpha[k/4];
 						kv6->colors_final[c++] = g*alpha[k/4];
 						kv6->colors_final[c++] = b*alpha[k/4];
 						kv6->colors_final[c++] = 255;
-					#endif
 						kv6->normals_final[n++] = kv6_normals[a][0]*128;
 						kv6->normals_final[n++] = -kv6_normals[a][2]*128;
 						kv6->normals_final[n++] = kv6_normals[a][1]*128;
@@ -524,9 +422,7 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 			glEnable(GL_LIGHTING);
 			glEnable(GL_LIGHT0);
 			glEnable(GL_COLOR_MATERIAL);
-			#ifndef OPENGL_ES
 			glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
-			#endif
 			glEnable(GL_NORMALIZE);
 			if(!kv6->colorize) {
 				glx_displaylist_draw(&kv6->display_list[team%3],GLX_DISPLAYLIST_ENHANCED);
@@ -542,11 +438,7 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 				glVertexPointer(3,GL_FLOAT,0,kv6->vertices_final);
 				glColorPointer(4,GL_UNSIGNED_BYTE,0,kv6->colors_final);
 				glNormalPointer(GL_BYTE,0,kv6->normals_final);
-				#ifdef OPENGL_ES
-				glDrawArrays(GL_TRIANGLES,0,kv6->size);
-				#else
 				glDrawArrays(GL_QUADS,0,kv6->size);
-				#endif
 				glDisableClientState(GL_NORMAL_ARRAY);
 				glDisableClientState(GL_COLOR_ARRAY);
 				glDisableClientState(GL_VERTEX_ARRAY);
@@ -650,9 +542,7 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 		float len_y = len3D(matrix_model[4],matrix_model[5],matrix_model[6]);
 		float len_z = len3D(matrix_model[8],matrix_model[9],matrix_model[10]);
 
-		#ifndef OPENGL_ES
 		if(!glx_version)
-		#endif
 		{
 			float params[3] = {0.0F,0.0F,1.0F};
 			glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION,params);
@@ -660,13 +550,10 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 			glEnable(GL_LIGHTING);
 			glEnable(GL_LIGHT0);
 			glEnable(GL_COLOR_MATERIAL);
-			#ifndef OPENGL_ES
 			glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
-			#endif
 			glEnable(GL_NORMALIZE);
 		}
 
-		#ifndef OPENGL_ES
 		if(glx_version) {
 			glEnable(GL_PROGRAM_POINT_SIZE);
 			glUseProgram(kv6_program);
@@ -676,7 +563,6 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 			glUniform3f(glGetUniformLocation(kv6_program,"camera"),camera_x,camera_y,camera_z);
 			glUniformMatrix4fv(glGetUniformLocation(kv6_program,"model"),1,0,matrix_model);
 		}
-		#endif
 		if(settings.multisamples)
 			glDisable(GL_MULTISAMPLE);
 
@@ -702,16 +588,12 @@ void kv6_render(struct kv6_t* kv6, unsigned char team) {
 
 		if(settings.multisamples)
 			glEnable(GL_MULTISAMPLE);
-		#ifndef OPENGL_ES
 		if(glx_version) {
 			glUseProgram(0);
 			glDisable(GL_PROGRAM_POINT_SIZE);
 		}
-		#endif
 
-		#ifndef OPENGL_ES
 		if(!glx_version)
-		#endif
 		{
 			glDisable(GL_NORMALIZE);
 			glDisable(GL_COLOR_MATERIAL);
